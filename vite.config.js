@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  base: '/longde-road-neighborhood/'
+  // Relative assets work on both the repository Pages path and the custom domain root.
+  base: './'
 });

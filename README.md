@@ -4,7 +4,7 @@ An independent Three.js reconstruction of the Longde Road / Funong Road neighbor
 
 Live site: https://chlee-sage.github.io/longde-road-neighborhood/
 
-GitHub Pages is served from the generated `gh-pages` branch. After source changes, run `npm run build`, copy the new `dist/` contents to that branch, and push it.
+GitHub Pages is served from the generated `gh-pages` branch. The build uses relative asset paths so it works at both the repository Pages path and the custom domain root. After source changes, run `npm run build`, copy the new `dist/` contents to that branch, and push it.
 
 ## Run locally
 
