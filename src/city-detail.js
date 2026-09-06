@@ -107,22 +107,6 @@ export function facadeDetails(k,towers){
 
 export function streetDetails(k){
   const {box,ellipse,shrub,path,materials,groups}=k;
-  function sign(text,u,v,y,w=5){
-    const canvas=document.createElement('canvas');canvas.width=512;canvas.height=128;
-    const ctx=canvas.getContext('2d');ctx.fillStyle='#247366';ctx.fillRect(0,0,512,128);ctx.strokeStyle='#dce8d9';ctx.lineWidth=6;ctx.strokeRect(6,6,500,116);ctx.fillStyle='#fff';ctx.textAlign='center';ctx.font='bold 54px "Microsoft JhengHei",sans-serif';ctx.fillText(text,256,78);
-    const mesh=new THREE.Mesh(new THREE.PlaneGeometry(w,w/4),new THREE.MeshStandardMaterial({map:new THREE.CanvasTexture(canvas),roughness:.8,side:THREE.DoubleSide}));mesh.position.set(X(u),y,Z(v));groups.details.add(mesh);
-  }
-  // Details observed at the Longde / Funong corner; positions remain approximate.
-  for(const [u,v]of [[640,575],[572,522]]){
-    ellipse('details','steel',u,v,.7,.7,5.7,.25);
-    path('details','steel',[[u,v,5.4],[u+6,v,5.9],[u+17,v,5.9]],.085);
-    box('details','dark',u+14,v,12,3,.53,5.65);
-    for(let i=0;i<3;i++){
-      const lens=new THREE.Mesh(new THREE.CircleGeometry(.15,16),new THREE.MeshBasicMaterial({color:i===2?0x51b996:0x34403a}));lens.position.set(X(u+10+i*3.6),5.9,Z(v+1.6));groups.details.add(lens);
-    }
-    sign('龍德路 Longde Rd.',u+4,v+2,4.65,2.2);
-    for(let i=0;i<5;i++)box('details',i%2?'yellow':'dark',u,v,1.9,1.9,.22,.3+i*.22);
-  }
   for(let u=665;u<814;u+=10)for(let v=542;v<562;v+=7){box('ground','ledge',u,v,9.7,6.7,.055,.31);}
   const planterGeometry=new THREE.CylinderGeometry(.78,.43,.6,24);
   for(const u of [679,707,759,795]){
@@ -131,11 +115,6 @@ export function streetDetails(k){
   }
   for(const u of [673,687,782,796]){ellipse('details','steel',u,565,.46,.46,.85,.25);ellipse('details','ledge',u,565,.53,.53,.12,1.05);}
   for(let v=609;v<1140;v+=19){box('details','stone',648,v,2,2,1.4,.3);box('details','steel',648,v+9,1,17,.07,1.2);box('details','steel',648,v+9,1,17,.07,.8);}
-  for(let v=333;v<491;v+=11){
-    box('details','dark',563,v,3.1,7,.34,.58);box('details','steel',563,v,3,3,.65,.25);
-    for(const dz of [-2.5,2.5])ellipse('details','dark',563,v+dz,.8,.8,.38,.23);
-    box('details','red',563,v-1.5,3.4,3,.42,.42);
-  }
   // Shopfront glazing under the existing neighborhood wings.
   for(const v of [303,331,359,405,433,461]){
     box('buildings','glass',558,v,1,18,2.8,.5);box('buildings','stone',560,v,7,23,.25,3.4);

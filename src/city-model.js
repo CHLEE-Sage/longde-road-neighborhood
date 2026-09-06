@@ -3,6 +3,7 @@ import { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import { geometryKit,X,Z } from './city-geometry.js';
 import { createLandmarks,createCampus,WINDSOR_HEIGHT } from './city-landmarks.js';
 import { streetDetails } from './city-detail.js';
+import { intersectionDetails } from './intersection-details.js';
 
 export function createCity(scene){
   const k=geometryKit(scene);
@@ -25,9 +26,9 @@ export function createCity(scene){
   for(const [u,v,w,d]of [[990,78,1980,70],[602,665,74,1330],[78,665,70,1330],[990,547,1980,78],[1930,559,72,1030]])box('roads','walk',u,v,w,d,.2);
   for(const [u,v,w,d]of [[990,78,1980,45],[602,665,43,1330],[78,665,40,1330],[990,547,1980,43],[1930,559,40,1030]])box('roads','asphalt',u,v,w,d,.27);
   segment('roads','walk',[600,1284],[1950,1088],86,.23,0);segment('roads','asphalt',[600,1284],[1950,1088],65,.29,0);
-  for(let u=135;u<1890;u+=26)if(Math.abs(u-602)>39){segment('roads','line',[u,71],[u+13,71],.8);segment('roads','line',[u,86],[u+13,86],.8);segment('roads','line',[u,547],[u+12,547],.7);}
-  for(let v=125;v<1210;v+=26)if(Math.abs(v-547)>40){segment('roads','yellow',[600,v],[600,v+14],.7);segment('roads','yellow',[604,v],[604,v+14],.7);}
-  for(const [u,v]of [[602,547],[78,547],[602,78],[78,78]]){
+  for(let u=135;u<1890;u+=26)if(Math.abs(u-602)>39){segment('roads','line',[u,71],[u+13,71],.8);segment('roads','line',[u,86],[u+13,86],.8);if(u<461||u>780)segment('roads','line',[u,547],[u+12,547],.7);}
+  for(let v=125;v<1210;v+=26)if((v<340||v>742)&&Math.abs(v-547)>40){segment('roads','yellow',[600,v],[600,v+14],.7);segment('roads','yellow',[604,v],[604,v+14],.7);}
+  for(const [u,v]of [[78,547],[602,78],[78,78]]){
     for(let i=-4;i<=4;i++)for(const side of [-1,1]){box('roads','line',u+i*4.4,v+side*32,2.4,12,.035,.29);box('roads','line',u+side*32,v+i*4.4,12,2.4,.035,.29);}
     if(u===602){segment('roads','line',[u-25,v-25],[u+25,v+25],.65);segment('roads','line',[u+25,v-25],[u-25,v+25],.65);}
   }
@@ -81,8 +82,8 @@ export function createCity(scene){
 
   createCampus(k);treeRow([646,115],[646,378],19,.75);
   function lamp(u,v){ellipse('details','steel',u,v,.55,.55,6,.3);box('details','steel',u+3,v,6,1,.15,6.15);box('details','white',u+5,v,3,2,.2,6);}
-  for(let v=139;v<1220;v+=95){lamp(573,v);lamp(634,v+27);}
-  for(let u=144;u<1840;u+=120){lamp(u,584);lamp(u,107);}
+  for(let v=139;v<1220;v+=95){if(v<330||v>740)lamp(573,v);if(v+27<330||v+27>740)lamp(634,v+27);}
+  for(let u=144;u<1840;u+=120){if(u<460||u>790)lamp(u,584);lamp(u,107);}
   for(const [u,v,a]of [[591,321,0],[614,904,0],[351,555,Math.PI/2],[1092,539,Math.PI/2],[876,72,Math.PI/2],[1592,87,Math.PI/2]]){box('details','white',u,v,8,18,1.1,.3,a);box('details','glass',u,v,6.8,9,.9,1.4,a);}
   const point=new THREE.Group();point.position.set(X(581),.4,Z(529));scene.add(point);
   const ring=new THREE.Mesh(new THREE.TorusGeometry(1.3,.12,8,40),k.materials.amber);ring.rotation.x=-Math.PI/2;point.add(ring);
@@ -90,5 +91,5 @@ export function createCity(scene){
   const windsor=label('興富發溫莎堡',839,466,WINDSOR_HEIGHT+14,'雙塔 · 地上 30 層');
   label('龍華國小',1057,853,19,'校舍連廊 · 中庭 · 活動中心');label('街角綠地',1222,229,2,'依衛星影像輪廓');
   label('神農路',1010,78,2).userData.mapOnly=true;
-  streetDetails(k);k.bake();return {groups,labels,windsor,point};
+  streetDetails(k);const intersection=intersectionDetails(k);k.bake();return {groups,labels,windsor,point,intersection};
 }

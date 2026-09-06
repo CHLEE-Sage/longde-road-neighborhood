@@ -23,7 +23,7 @@ export function geometryKit(scene){
   }
   const box=(g,m,u,v,w,d,h=1,y=0,a=0)=>shape(g,'box',m,u,v,w,d,h,y,a);
   const ellipse=(g,m,u,v,rx,rz,h,y=0)=>shape(g,'cylinder',m,u,v,rx,rz,h,y);
-  const shrub=(u,v,r,h,y)=>shape('details','sphere','tree1',u,v,r,r,h,y);
+  const shrub=(u,v,r,h,y,group='details')=>shape(group,'sphere','tree1',u,v,r,r,h,y);
   function polygon(group,mat,points,h=.1,y=0){
     const contour=new THREE.Shape(points.map(([u,v])=>new THREE.Vector2(X(u),-Z(v))));
     const mesh=new THREE.Mesh(new THREE.ExtrudeGeometry(contour,{depth:h,bevelEnabled:false}),materials[mat]);

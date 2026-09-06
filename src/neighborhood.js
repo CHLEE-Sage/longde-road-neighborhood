@@ -27,21 +27,24 @@ try{
     aerial:{position:[356,352,431],target:[0,14,-2],fov:42,name:'街區鳥瞰',number:'01'},
     map:{position:[0,610,.02],target:[0,0,0],fov:37,name:'地圖俯視',number:'02'},
     street:{position:[-67,4,-21],target:[-50,10,-32],fov:70,name:'溫莎堡入口近景',number:'03'},
+    junction:{position:[-82.34,2.4,-20.5],target:[-82.34,4,-75],fov:86,name:'龍德路 × 富農路',number:'04'},
+    school:{position:[-77,2.0,-19],target:[-64,2.4,-13],fov:72,name:'校園街角與自行車架',number:'05'},
   };
   let transition=null,activeView='aerial',showLabels=true,heightOn=true,needsRender=true;
   controls.addEventListener('change',()=>{needsRender=true;});
   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function updateLabels(){needsRender=true;city.labels.forEach(label=>{label.visible=showLabels&&(!label.userData.mapOnly||activeView==='map')&&(activeView!=='street'||label.userData.featured);});}
+  function isCloseView(name){return ['street','junction','school'].includes(name);}
+  function updateLabels(){needsRender=true;city.labels.forEach(label=>{label.visible=showLabels&&(!label.userData.mapOnly||activeView==='map')&&(!isCloseView(activeView)||label.userData.featured);});}
   function setView(name,immediate=false){
     needsRender=true;activeView=name;const view=views[name];
-    scene.background.setHex(name==='street'?0xc3d3df:0xe7e9e2);
-    controls.maxPolarAngle=name==='street'?Math.PI*.65:Math.PI*.48;
-    document.querySelector('#neighborhood').classList.toggle('street-view',name==='street');updateLabels();
+    scene.background.setHex(isCloseView(name)?0xc3d3df:0xe7e9e2);
+    controls.maxPolarAngle=isCloseView(name)?Math.PI*.65:Math.PI*.48;
+    document.querySelector('#neighborhood').classList.toggle('street-view',isCloseView(name));updateLabels();
     controls.enableDamping=false;controls.update();controls.enableDamping=true;
     document.querySelectorAll('[data-city-view]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.cityView===name)));
     document.querySelector('#city-view-name').textContent=view.name;document.querySelector('#city-view-number').textContent=view.number;
     const next={...view,position:[...view.position]};
-    if(innerWidth<700&&name!=='street'){
+    if(innerWidth<700&&!isCloseView(name)){
       const factor=name==='map'?2.5:2.65;next.position=next.position.map(value=>value*factor);
     }
     if(immediate||reduced){transition=null;camera.position.set(...next.position);controls.target.set(...next.target);camera.fov=next.fov;camera.updateProjectionMatrix();controls.update();}
@@ -61,7 +64,8 @@ try{
   });
   let contextLost=false;
   canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();contextLost=true;loading.hidden=false;loading.querySelector('p').textContent='顯示卡連線中斷，請重新整理頁面。';});
-  setView('aerial',true);
+  const requestedView=new URLSearchParams(location.search).get('view');
+  setView(Object.hasOwn(views,requestedView)?requestedView:'aerial',true);
   const compass=document.querySelector('.orientation div'),north=new THREE.Vector3(),origin=new THREE.Vector3();
   let renderedFrames=0;
   renderer.setAnimationLoop(()=>{
