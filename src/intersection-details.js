@@ -169,12 +169,5 @@ export function intersectionDetails(k){
     for(const s of [-1,1])path('trees','trunk',[[u,598,3.4],[u+s*6,600,4.4],[u+s*10,601,5.6]],.11);
     for(let i=0;i<4;i++)shrub(u-8+i*5,598+(i%2)*4,5.2,1.5,5.4+(i%2)*.45,'trees');
   }
-  // Stone arcade and round windows at the northwest corner.
-  box('buildings','stone',547,493,26,31,9.7,.3);
-  for(const v of [481,502]){
-    box('buildings','glass',561,v,1,14,3.0,1.2);box('buildings','ledge',562,v,4,18,.4,4.6);
-    const opening=new THREE.Mesh(new THREE.CircleGeometry(.7,28),materials.dark);opening.rotation.y=Math.PI/2;opening.position.set(X(560.6),7.1,Z(v));groups.buildings.add(opening);
-    const ring=new THREE.Mesh(new THREE.TorusGeometry(.79,.13,6,28),materials.ledge);ring.rotation.y=Math.PI/2;ring.position.set(X(561),7.1,Z(v));groups.buildings.add(ring);
-  }
   return {scooterCount:22,bicycleCount:6,crossingCount:4,...referenceInventory};
 }

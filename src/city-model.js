@@ -5,6 +5,7 @@ import { createLandmarks,createCampus,WINDSOR_HEIGHT } from './city-landmarks.js
 import { streetDetails } from './city-detail.js';
 import { intersectionDetails } from './intersection-details.js';
 import { TREE_EXCLUSIONS } from './reference-details.js';
+import { createTaichingCorner } from './taiching-corner.js';
 
 export function createCity(scene){
   const k=geometryKit(scene,{treeExclusions:TREE_EXCLUSIONS});
@@ -54,7 +55,7 @@ export function createCity(scene){
   wing(229,468,90,101,84,{tone:'stone',style:'modern',roofDetail:false});
   for(const u of [195,212,229,246,263])box('buildings','ledge',u,521,3,5,80,3);
   ellipse('buildings','ledge',231,468,48,34,1.1,84.5);ellipse('buildings','water',231,468,39,27,.5,85.6);
-  wing(412,480,141,76,38,{tone:'cream'});wing(535,427,48,158,27,{tone:'wall'});
+  wing(412,480,141,76,38,{tone:'cream'});const storefront=createTaichingCorner(k);
   treeRow([115,113],[553,112],26,.8);treeRow([575,134],[575,502],25,.7);treeRow([106,182],[105,505],20,.8);
 
   createLandmarks(k);
@@ -92,5 +93,5 @@ export function createCity(scene){
   const windsor=label('興富發溫莎堡',839,466,WINDSOR_HEIGHT+14,'雙塔 · 地上 30 層');
   label('龍華國小',1057,853,19,'校舍連廊 · 中庭 · 活動中心');label('街角綠地',1222,229,2,'依衛星影像輪廓');
   label('神農路',1010,78,2).userData.mapOnly=true;
-  streetDetails(k);const intersection=intersectionDetails(k);k.bake();return {groups,labels,mapLabels,windsor,point,intersection};
+  streetDetails(k);const intersection=intersectionDetails(k);k.bake();return {groups,labels,mapLabels,windsor,point,intersection,storefront};
 }

@@ -29,12 +29,13 @@ try{
     street:{position:[-53,2.6,-19],target:[-54,5,-33],fov:75,name:'入口招牌與貨運車廂',number:'03'},
     junction:{position:[-82.34,2.4,-20.5],target:[-82.34,4,-75],fov:86,name:'龍德路 × 富農路',number:'04'},
     school:{position:[-77,2.0,-19],target:[-64,2.4,-13],fov:72,name:'校園街角與自行車架',number:'05'},
+    storefront:{position:city.storefront.viewPosition,target:city.storefront.viewTarget,fov:65,name:'台慶街角・圓窗與金色門廊',number:'06'},
   };
   let transition=null,activeView='aerial',showLabels=true,heightOn=true,needsRender=true;
   controls.addEventListener('change',()=>{needsRender=true;});
   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function isCloseView(name){return ['street','junction','school'].includes(name);}
-  function updateLabels(){needsRender=true;city.labels.forEach(label=>{label.visible=showLabels&&(!label.userData.mapOnly||activeView==='map')&&(!isCloseView(activeView)||label.userData.featured);});city.mapLabels.forEach(label=>{label.visible=showLabels&&!isCloseView(activeView);});}
+  function isCloseView(name){return ['street','junction','school','storefront'].includes(name);}
+  function updateLabels(){needsRender=true;city.labels.forEach(label=>{label.visible=showLabels&&activeView!=='storefront'&&(!label.userData.mapOnly||activeView==='map')&&(!isCloseView(activeView)||label.userData.featured);});city.mapLabels.forEach(label=>{label.visible=showLabels&&!isCloseView(activeView);});city.point.visible=activeView!=='storefront';}
   function setView(name,immediate=false){
     needsRender=true;activeView=name;const view=views[name];
     scene.background.setHex(isCloseView(name)?0xc3d3df:0xe7e9e2);

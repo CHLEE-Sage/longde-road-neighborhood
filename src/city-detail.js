@@ -116,7 +116,7 @@ export function streetDetails(k){
   for(const u of [673,687,782,796]){ellipse('details','steel',u,565,.46,.46,.85,.25);ellipse('details','ledge',u,565,.53,.53,.12,1.05);}
   for(let v=609;v<1140;v+=19){box('details','stone',648,v,2,2,1.4,.3);box('details','steel',648,v+9,1,17,.07,1.2);box('details','steel',648,v+9,1,17,.07,.8);}
   // Shopfront glazing under the existing neighborhood wings.
-  for(const v of [303,331,359,405,433,461]){
+  for(const v of [303,331]){
     box('buildings','glass',558,v,1,18,2.8,.5);box('buildings','stone',560,v,7,23,.25,3.4);
     box('buildings','warm',559,v,1.2,.6,2.8,.5);
   }

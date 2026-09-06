@@ -6,4 +6,5 @@
 @media(max-width:700px){.street-view .intro{top:80px;padding:12px;left:12px}.street-view h1{font-size:22px!important}.street-view .intro .model-note{display:none}}
 @media(max-width:700px){.city-controls{gap:2px;padding:4px}.city-controls button{padding:0 8px;gap:4px}.city-controls button span{font-size:9px}.city-controls button:last-child{padding:0 9px}}
 @media(max-width:380px){.city-controls button{padding:0 5px;font-size:12px;gap:3px}.city-controls button span{font-size:8px}.control-divider{margin:0}}
+@media(max-width:700px){.city-controls{display:grid;grid-template-columns:repeat(6,minmax(0,1fr)) 28px;width:min(480px,calc(100vw - 24px))}.city-controls .control-divider{display:none}.city-controls button{font-size:0;gap:0;padding:0!important;min-width:0}.city-controls button span{font-size:9px}.city-controls #city-reset{font-size:20px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}

@@ -9,23 +9,10 @@ export const SCHOOL_FOREGROUND_TREES=[
   {id:'school-front-3',u:716,v:598,height:6.0},
   {id:'school-front-4',u:748,v:598,height:5.9},
 ];
-export const TREE_EXCLUSIONS=[{minU:650,maxU:782,minV:580,maxV:625}];
+export const TREE_EXCLUSIONS=[{minU:650,maxU:782,minV:580,maxV:625},{minU:560,maxU:590,minV:345,maxV:515}];
 
 export function referenceDetails(k,{canvasMaterial,panel,vehicles}){
   const {materials,groups,box}=k;
-  const taiching=canvasMaterial((ctx,w,h)=>{
-    ctx.fillStyle='#235999';ctx.fillRect(0,0,w,h);
-    ctx.strokeStyle='#efd365';ctx.lineWidth=12;ctx.beginPath();ctx.arc(w/2,86,61,0,7);ctx.stroke();
-    ctx.fillStyle='#efd365';ctx.beginPath();ctx.moveTo(44,102);ctx.lineTo(131,39);ctx.lineTo(114,91);ctx.lineTo(167,91);ctx.lineTo(80,142);ctx.lineTo(93,103);ctx.closePath();ctx.fill();
-    ctx.fillStyle='#fff';ctx.font='bold 84px "Microsoft JhengHei",sans-serif';ctx.textAlign='center';
-    [...'台慶不動產'].forEach((ch,i)=>ctx.fillText(ch,w/2,251+i*107));
-  },212,768);
-  panel(taiching,563,477,2.65,.69,2.8,Math.PI/2,'buildings');
-  const storefront=canvasMaterial((ctx,w,h)=>{
-    ctx.fillStyle='#214d79';ctx.fillRect(0,0,w,h);ctx.fillStyle='#f4f1db';ctx.font='bold 81px "Microsoft JhengHei",sans-serif';ctx.fillText('台慶不動產',112,100);ctx.fillStyle='#e9c851';ctx.beginPath();ctx.arc(64,72,39,0,7);ctx.fill();
-    for(let i=0;i<5;i++){ctx.fillStyle='#eeeadc';ctx.fillRect(25+i*151,133,129,127);ctx.fillStyle='#678f98';ctx.fillRect(35+i*151,144,109,67);ctx.fillStyle='#aaa98e';ctx.fillRect(35+i*151,225,96,9);}
-  },800,284);
-  panel(storefront,563.5,497,2.1,3.3,1.18,Math.PI/2,'buildings');
   const genius=canvasMaterial((ctx,w,h)=>{
     ctx.fillStyle='#19353b';ctx.fillRect(0,0,w,h);ctx.fillStyle='#ef9140';
     ctx.beginPath();ctx.ellipse(68,73,42,51,0,0,7);ctx.fill();ctx.fillStyle='#fff';for(const x of [54,82]){ctx.beginPath();ctx.ellipse(x,59,10,17,0,0,7);ctx.fill();ctx.fillStyle='#27383b';ctx.beginPath();ctx.arc(x,61,5,0,7);ctx.fill();ctx.fillStyle='#fff';}
