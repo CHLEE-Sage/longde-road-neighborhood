@@ -12,6 +12,14 @@ The intersection detail pass uses the five supplied street-view images: all-way 
 
 Repeated bicycle/scooter components are merged by material; existing static render and shadow caching remain in use. New foliage participates in the tree visibility toggle. Browser checks cover the two new views and the five-button layout at 320 px width.
 
+### Reference-focused refinement
+
+The supplied five photographs are the reference epoch for shop and delivery-vehicle details. Blue Taiching signage and orange Genius English signage replace generic signs. An orange delivery truck carries reconstructed text reading `KERRY / TJ LOGISTICS / 嘉里大榮物流` on both cargo-box sides. The brand artwork is a local typographic approximation, not an official logo asset; transient vehicles and shop tenancy are not verified current conditions.
+
+Road-name overlays are now navigation labels shown only in the aerial/plan views, not painted street text. Unverified `停`/`待轉` characters were removed while retaining the waiting-box outlines; `慢` is yellow, approach stop bars cover incoming lanes, and diagonal crossing boundaries form wider paired corridors. Vehicle signal heads face their approaches, have lens hoods, and use an illustrative north/south-green, east/west-red snapshot. Pedestrian displays include a red standing figure and one reference-style amber `30` over a green figure. These are static visual references, not a working traffic phase simulation.
+
+`src/reference-details.js` records four individually positioned foreground school-side trunks. Automatic tree generation is excluded from that same bounded corridor, preventing doubled rows. The four anchors are a reconstruction scope, not a certified count of every tree in the photograph or the street. Obscured/background trees remain approximate; a complete dated panorama or field inventory is still needed to establish an exact whole-street count.
+
 GitHub Pages is served from the generated `gh-pages` branch. The build uses relative asset paths so it works at both the repository Pages path and the custom domain root. After source changes, run `npm run build`, copy the new `dist/` contents to that branch, and push it.
 
 ## Run locally

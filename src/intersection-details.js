@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { X,Z,SCALE } from './city-geometry.js';
+import { referenceDetails,SCHOOL_FOREGROUND_TREES } from './reference-details.js';
 
 export const JUNCTION={u:602,v:547};
 
@@ -19,8 +20,8 @@ export function intersectionDetails(k){
   function panel(material,u,v,y,w,h,angle=0,group='details'){
     const mesh=new THREE.Mesh(new THREE.PlaneGeometry(w,h),material);mesh.position.set(X(u),y,Z(v));mesh.rotation.y=angle;groups[group].add(mesh);return mesh;
   }
-  function words(text,u,v,w,d,rotation=0){
-    const mat=canvasMaterial((ctx,cw,ch)=>{ctx.fillStyle='#e5e4d7';ctx.font='bold 145px "Microsoft JhengHei",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,cw/2,ch/2,cw-15);});
+  function words(text,u,v,w,d,rotation=0,color='#e5e4d7'){
+    const mat=canvasMaterial((ctx,cw,ch)=>{ctx.fillStyle=color;ctx.font='bold 145px "Microsoft JhengHei",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,cw/2,ch/2,cw-15);});
     const mesh=panel(mat,u,v,.35,w*SCALE,d*SCALE,0,'roads');mesh.rotation.set(-Math.PI/2,0,rotation);
   }
   const roadContour=[[568,350],[636,350],[636,493],[646,513],[770,513],[770,581],[648,581],[636,595],[636,732],[568,732],[568,595],[554,581],[474,581],[474,513],[554,513],[568,499]];
@@ -46,25 +47,29 @@ export function intersectionDetails(k){
       box('roads','line',602+i*6.5,547+side*46,3.5,9,.018,.335);
       box('roads','line',602+side*46,547+i*6.5,9,3.5,.018,.335);
     }
-    segment('roads','line',[569,547+side*55],[635,547+side*55],1.2,.018,.335);
+    segment('roads','line',[side<0?569:604,547+side*55],[side<0?600:635,547+side*55],1.2,.018,.335);
     for(const offset of [-1,1])segment('roads','yellow',[602+offset*1.0,side<0?350:609],[602+offset*1.0,side<0?485:732],.8,.018,.335);
     segment('roads','line',[580,side<0?350:610],[580,side<0?482:732],.65,.018,.335);
     segment('roads','line',[624,side<0?350:610],[624,side<0?482:732],.65,.018,.335);
   }
-  for(const s of [-1,1]){
-    segment('roads','line',[571,547+s*31],[633,547-s*31],.7,.016,.34);
-    segment('roads','line',[573,547+s*33],[635,547-s*29],.7,.016,.34);
-  }
+  for(const slope of [-1,1])for(const edge of [-1,1])segment('roads','line',[571+edge*3,547-slope*31-edge*slope*3],[633+edge*3,547+slope*31-edge*slope*3],.7,.016,.34);
+  segment('roads','line',[547,550],[547,579],1.2,.018,.335);
+  segment('roads','line',[657,515],[657,544],1.2,.018,.335);
   for(const [u,v]of [[586,479],[618,617]]){
     for(const s of [-1,1]){segment('roads','line',[u-8,v+s*7],[u+8,v+s*7],.65,.018,.34);segment('roads','line',[u+s*8,v-7],[u+s*8,v+7],.65,.018,.34);}
-    words('待轉',u,v,13,8);
   }
-  words('慢',616,677,9,15);words('慢',589,390,9,15,Math.PI);
-  words('停',559,528,9,10,Math.PI/4);words('停',645,569,9,10,-Math.PI/4);
-  words('龍德路',617,646,10,24);
+  words('慢',616,677,9,15,0,'#d6c276');words('慢',589,390,9,15,Math.PI,'#d6c276');
 
   const stripe=canvasMaterial((ctx,w,h)=>{ctx.fillStyle='#edc85a';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#26352e';ctx.lineWidth=50;for(let i=-h;i<w+h;i+=100){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i-h,h);ctx.stroke();}},128,512);
-  const person=canvasMaterial((ctx,w,h)=>{ctx.fillStyle='#162a26';ctx.fillRect(0,0,w,h);ctx.fillStyle='#f26755';ctx.beginPath();ctx.arc(w*.5,h*.23,17,0,7);ctx.fill();ctx.strokeStyle='#f26755';ctx.lineWidth=16;ctx.lineCap='round';for(const pts of [[[.5,.38],[.5,.62]],[[.3,.53],[.5,.4],[.7,.53]],[[.5,.6],[.34,.86]],[[.5,.6],[.65,.86]]]){ctx.beginPath();pts.forEach(([x,y],i)=>i?ctx.lineTo(x*w,y*h):ctx.moveTo(x*w,y*h));ctx.stroke();}},128,192);
+  function pedestrianFace(walking=false){return canvasMaterial((ctx,w,h)=>{
+    ctx.fillStyle='#13231f';ctx.fillRect(0,0,w,h);const color=walking?'#76e4a0':'#ee6448';
+    if(walking){ctx.fillStyle='#f7ac43';ctx.font='bold 85px monospace';ctx.textAlign='center';ctx.fillText('30',w/2,91);}
+    const oy=walking?107:30,scale=walking?.63:.83;ctx.save();ctx.translate(w/2,oy);ctx.scale(scale,scale);ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=15;ctx.lineCap='square';ctx.beginPath();ctx.arc(0,18,16,0,7);ctx.fill();
+    const paths=walking?[[[0,44],[-6,92]],[[0,50],[-30,79]],[[0,50],[29,67]],[[0,90],[-35,145]],[[0,90],[35,133]]]:[[[0,44],[0,99]],[[-24,47],[-24,98]],[[24,47],[24,98]],[[-12,99],[-12,155]],[[12,99],[12,155]]];
+    for(const points of paths){ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.stroke();}ctx.restore();
+    ctx.fillStyle='#07140d44';for(let y=1;y<h;y+=5)ctx.fillRect(0,y,w,1);
+  },160,256);}
+  const person=pedestrianFace(false),countdown=pedestrianFace(true);
   function roadSign(u,v,y,cn,en,angle=0){
     const mat=canvasMaterial((ctx,w,h)=>{ctx.fillStyle='#288779';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#e1e9df';ctx.lineWidth=9;ctx.strokeRect(6,6,w-12,h-12);ctx.fillStyle='#fff';ctx.textAlign='center';ctx.font='bold 88px "Microsoft JhengHei",sans-serif';ctx.fillText(`← ${cn} →`,w/2,110);ctx.font='58px sans-serif';ctx.fillText(en,w/2,194);},512,230);
     panel(mat,u,v,y,1.9,.85,angle);
@@ -72,23 +77,31 @@ export function intersectionDetails(k){
   for(const [u,v,angle,cn,en]of [[645,589,-Math.PI/2,'龍德路','Longde Rd.'],[556,505,0,'富農路','Funong Rd.'],[554,585,Math.PI/2,'龍德路','Longde Rd.'],[644,507,-Math.PI/2,'富農路','Funong Rd.']]){
     ellipse('details','steel',u,v,.58,.58,5.7,.49);
     box('details','signalGreen',u,v,2.1,2.5,1.0,2.25,angle);
-    panel(person,u+Math.sin(angle)*1.5,v+Math.cos(angle)*1.5,2.77,.43,.67,angle);
+    panel(u<602&&v<547?countdown:person,u+Math.sin(angle)*1.5,v+Math.cos(angle)*1.5,2.77,.43,.67,angle);
     box('details','signalGreen',u,v+Math.cos(angle)*.8,3.1,3.8,.07,3.28,angle);
     panel(stripe,u+Math.sin(angle)*.7,v+Math.cos(angle)*.7,1.85,.24,1.35,angle);
     roadSign(u+Math.cos(angle)*4.5+Math.sin(angle),v-Math.sin(angle)*4.5+Math.cos(angle),4.1,cn,en,angle);
     const direction=u<602?1:-1;
     const arm=[[u,v,5.5],[u+direction*3,v,6.35],[u+direction*12,v,6.7],[u+direction*25,v,6.7]];path('details','steel',arm,.08);
-    box('details','signalGreen',u+direction*23,v,9.6,2.5,.49,6.45);
+    const vehicleAngle=v<547?(u<602?0:-Math.PI/2):(u>602?Math.PI:Math.PI/2);
+    const hx=u+direction*23,hv=v,nx=Math.sin(vehicleAngle),nz=Math.cos(vehicleAngle),tx=Math.cos(vehicleAngle),tz=-Math.sin(vehicleAngle);
+    box('details','signalGreen',hx,hv,9.6,2.5,.49,6.45,vehicleAngle);
     for(let i=0;i<3;i++){
-      const x=u+direction*(26.2-i*3.2);
-      const light=new THREE.Mesh(new THREE.CircleGeometry(.135,14),new THREE.MeshBasicMaterial({color:i===2?0x63d7a9:0x20352e}));light.position.set(X(x),6.7,Z(v+1.3));groups.details.add(light);
-      box('details','signalGreen',x,v+1.9,2.5,3,.065,6.88);
+      const delta=(i-1)*3.2,x=hx+tx*delta,z=hv+tz*delta,green=Math.abs(nz)>.5,active=green?2:0;
+      const light=new THREE.Mesh(new THREE.CircleGeometry(.135,18),new THREE.MeshBasicMaterial({color:i===active?(green?0x63d7a9:0xf26452):0x20352e}));light.rotation.y=vehicleAngle;light.position.set(X(x+nx*1.3),6.7,Z(z+nz*1.3));groups.details.add(light);
+      box('details','signalGreen',x+nx*2,z+nz*2,2.5,3,.065,6.88,vehicleAngle);
+      for(const s of [-1,1])box('details','signalGreen',x+tx*s*1.2+nx*2,z+tz*s*1.2+nz*2,.15,3,.3,6.59,vehicleAngle);
     }
   }
   // Signal controller and school warning signs on the southeastern pavement.
   box('details','signalGreen',650,594,3.2,3,1.5,.49);
   box('details','steel',650,594,3.8,3.7,.09,1.99);
   box('details','steel',650,595.6,2.7,.15,1.27,.62);
+  for(let i=0;i<6;i++)box('details','dark',650,595.72,2,.08,.018,.76+i*.055);
+  box('details','dark',650.9,595.75,.18,.12,.15,1.4);
+  box('details','steel',645,589,1.3,1.3,.12,3.78);
+  box('details','white',645,590.7,4.2,2.1,.29,3.84);
+  const cameraLens=new THREE.Mesh(new THREE.CircleGeometry(.055,12),materials.dark);cameraLens.position.set(X(645),3.99,Z(591.85));groups.details.add(cameraLens);
   const school=canvasMaterial((ctx,w,h)=>{ctx.fillStyle='#e1e3dc';ctx.fillRect(0,0,w,h);ctx.fillStyle='#275686';ctx.fillRect(0,0,w,h*.4);ctx.fillStyle='white';ctx.font='bold 65px "Microsoft JhengHei",sans-serif';ctx.textAlign='center';ctx.fillText('學校',w/2,84);ctx.strokeStyle='#af4e42';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(w/2,140);ctx.lineTo(24,270);ctx.lineTo(w-24,270);ctx.closePath();ctx.stroke();ctx.fillStyle='#283d42';ctx.font='55px sans-serif';ctx.fillText('人',w/2,247);},256,320);
   ellipse('details','steel',673,579,.45,.45,4.8,.5);panel(school,673,580,4,.6,.85);
   for(const [u,v]of [[668,590],[660,619]]){
@@ -138,6 +151,7 @@ export function intersectionDetails(k){
     for(let i=0;i<5;i++){const x=u-5+i*2.5;path('details','steel',[[x,v+3,.55],[x,v+3,1.12],[x,v+7,1.12],[x,v+7,.55]],.026);}
     for(let i=0;i<3;i++)place(bikeTemplate,u-4+i*4,v+6,Math.PI/2+.05*i);
   }
+  const referenceInventory=referenceDetails(k,{canvasMaterial,panel,vehicles});
   // Bake repeated vehicle parts by shared material to keep the street light to render.
   const mergedParts=new Map();
   for(const model of vehicles){model.updateMatrixWorld(true);model.traverse(obj=>{if(!obj.isMesh)return;const mat=obj.material;if(!mergedParts.has(mat))mergedParts.set(mat,[]);mergedParts.get(mat).push(obj.geometry.clone().applyMatrix4(obj.matrixWorld));});}
@@ -149,8 +163,9 @@ export function intersectionDetails(k){
   for(const u of [690,706,722]){box('buildings','glass',u,611,10,.8,.68,4.1);box('buildings','steel',u,610.5,.5,.6,.74,4.08);}
   for(let i=0;i<19;i++)box('buildings','steel',685,610.5,12,1.3,.045,.7+i*.14);
   path('buildings','steel',[[716,610,3.8],[716,610,2.5],[726,610,2.5],[726,610,.7]],.045);
-  for(const u of [660,685,716,748]){
-    box('ground','trunk',u,598,9,9,.018,.5);ellipse('trees','trunk',u,598,1.0,1.0,5.8,.5);
+  for(const {id,u,height} of SCHOOL_FOREGROUND_TREES){
+    box('ground','trunk',u,598,9,9,.018,.5);ellipse('trees','trunk',u,598,1.0,1.0,height,.5);
+    const anchor=new THREE.Object3D();anchor.name=id;anchor.position.set(X(u),.5,Z(598));groups.trees.add(anchor);
     for(const s of [-1,1])path('trees','trunk',[[u,598,3.4],[u+s*6,600,4.4],[u+s*10,601,5.6]],.11);
     for(let i=0;i<4;i++)shrub(u-8+i*5,598+(i%2)*4,5.2,1.5,5.4+(i%2)*.45,'trees');
   }
@@ -161,10 +176,5 @@ export function intersectionDetails(k){
     const opening=new THREE.Mesh(new THREE.CircleGeometry(.7,28),materials.dark);opening.rotation.y=Math.PI/2;opening.position.set(X(560.6),7.1,Z(v));groups.buildings.add(opening);
     const ring=new THREE.Mesh(new THREE.TorusGeometry(.79,.13,6,28),materials.ledge);ring.rotation.y=Math.PI/2;ring.position.set(X(561),7.1,Z(v));groups.buildings.add(ring);
   }
-  function shopSign(text,u,v,color){
-    const mat=canvasMaterial((ctx,w,h)=>{ctx.fillStyle=color;ctx.fillRect(0,0,w,h);ctx.fillStyle='#f4f1df';ctx.textAlign='center';ctx.font='bold 54px "Microsoft JhengHei",sans-serif';[...text].forEach((ch,i)=>ctx.fillText(ch,w/2,60+i*68));},128,512);
-    panel(mat,u,v,2.7,.62,2.6,Math.PI/2,'buildings');
-  }
-  shopSign('台慶不動產',560,476,'#345481');shopSign('英語教室',560,453,'#afa14d');shopSign('吉尼士美語',563,628,'#3c534b');
-  return {scooterCount:22,bicycleCount:6,crossingCount:4};
+  return {scooterCount:22,bicycleCount:6,crossingCount:4,...referenceInventory};
 }

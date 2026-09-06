@@ -8,7 +8,7 @@ export const X=u=>(u-960)*SCALE;
 export const Z=v=>(v-670)*SCALE;
 const colors={wall:0xc6baaa,cream:0xded6c4,stone:0x999c93,warm:0xb7a38c,glass:0x53676a,dark:0x354147,ledge:0xd9d7ce,roof:0xa5a59a,asphalt:0x565e60,line:0xe1ded1,yellow:0xd6bd76,walk:0xbabdaf,grass:0x789469,grass2:0x65805b,tree1:0x3e6551,tree2:0x527959,tree3:0x69865e,trunk:0x746452,solar:0x374f5d,panelLine:0x83929a,white:0xeae8de,amber:0xbe893c,steel:0x6c7873,water:0x6b9399,red:0xa96f58,roofGold:0xd6c89c,school:0xc7c1b1,blue:0x637d93};
 
-export function geometryKit(scene){
+export function geometryKit(scene,{treeExclusions=[]}={}){
   const materials=Object.fromEntries(Object.entries(colors).map(([key,color])=>[key,new THREE.MeshStandardMaterial({color,roughness:key==='glass'?.43:.84})]));
   materials.stone.color.setHex(0xa0a3a5);materials.ledge.color.setHex(0xe0dfdc);materials.warm.color.setHex(0xc2aa96);
   materials.glass.metalness=.28;materials.glass.roughness=.32;
@@ -40,6 +40,7 @@ export function geometryKit(scene){
   let seed=207;
   const random=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
   function tree(u,v,size=1,y=0){
+    if(treeExclusions.some(b=>u>=b.minU&&u<=b.maxU&&v>=b.minV&&v<=b.maxV))return;
     ellipse('trees','trunk',u,v,1.25,1.25,size*3,y);
     const tone=['tree1','tree2','tree3'][Math.floor(random()*3)];
     shape('trees','sphere',tone,u,v,size*11,size*10,size*5.1,y+2.4*size,random()*6);

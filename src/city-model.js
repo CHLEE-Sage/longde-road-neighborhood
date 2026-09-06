@@ -4,11 +4,12 @@ import { geometryKit,X,Z } from './city-geometry.js';
 import { createLandmarks,createCampus,WINDSOR_HEIGHT } from './city-landmarks.js';
 import { streetDetails } from './city-detail.js';
 import { intersectionDetails } from './intersection-details.js';
+import { TREE_EXCLUSIONS } from './reference-details.js';
 
 export function createCity(scene){
-  const k=geometryKit(scene);
+  const k=geometryKit(scene,{treeExclusions:TREE_EXCLUSIONS});
   const {groups,box,ellipse,polygon,segment,wing,courtyard,tree,treeRow,roof}=k;
-  const labels=[];
+  const labels=[],mapLabels=[];
   function label(text,u,v,y,sub='',featured=false){
     const el=document.createElement('div');el.className=`city-label${featured?' featured':''}`;
     const strong=document.createElement('strong');strong.textContent=text;el.append(strong);
@@ -18,7 +19,7 @@ export function createCity(scene){
   function roadText(text,u,v,width,angle=0){
     const c=document.createElement('canvas');c.width=512;c.height=96;
     const ctx=c.getContext('2d');ctx.font='500 48px "Microsoft JhengHei",sans-serif';ctx.fillStyle='#dddcd4';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,256,48);
-    const mesh=new THREE.Mesh(new THREE.PlaneGeometry(width,2.5),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthWrite:false}));mesh.rotation.set(-Math.PI/2,0,angle);mesh.position.set(X(u),.34,Z(v));groups.roads.add(mesh);
+    const mesh=new THREE.Mesh(new THREE.PlaneGeometry(width,2.5),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthWrite:false}));mesh.rotation.set(-Math.PI/2,0,angle);mesh.position.set(X(u),.34,Z(v));groups.roads.add(mesh);mapLabels.push(mesh);
   }
   box('ground','walk',990,665,1980,1330,2.1,-2.3);
   box('ground','grass2',990,663,1970,1310,.1,-.2);
@@ -91,5 +92,5 @@ export function createCity(scene){
   const windsor=label('興富發溫莎堡',839,466,WINDSOR_HEIGHT+14,'雙塔 · 地上 30 層');
   label('龍華國小',1057,853,19,'校舍連廊 · 中庭 · 活動中心');label('街角綠地',1222,229,2,'依衛星影像輪廓');
   label('神農路',1010,78,2).userData.mapOnly=true;
-  streetDetails(k);const intersection=intersectionDetails(k);k.bake();return {groups,labels,windsor,point,intersection};
+  streetDetails(k);const intersection=intersectionDetails(k);k.bake();return {groups,labels,mapLabels,windsor,point,intersection};
 }

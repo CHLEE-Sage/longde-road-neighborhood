@@ -26,7 +26,7 @@ try{
   const views={
     aerial:{position:[356,352,431],target:[0,14,-2],fov:42,name:'街區鳥瞰',number:'01'},
     map:{position:[0,610,.02],target:[0,0,0],fov:37,name:'地圖俯視',number:'02'},
-    street:{position:[-67,4,-21],target:[-50,10,-32],fov:70,name:'溫莎堡入口近景',number:'03'},
+    street:{position:[-53,2.6,-19],target:[-54,5,-33],fov:75,name:'入口招牌與貨運車廂',number:'03'},
     junction:{position:[-82.34,2.4,-20.5],target:[-82.34,4,-75],fov:86,name:'龍德路 × 富農路',number:'04'},
     school:{position:[-77,2.0,-19],target:[-64,2.4,-13],fov:72,name:'校園街角與自行車架',number:'05'},
   };
@@ -34,7 +34,7 @@ try{
   controls.addEventListener('change',()=>{needsRender=true;});
   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
   function isCloseView(name){return ['street','junction','school'].includes(name);}
-  function updateLabels(){needsRender=true;city.labels.forEach(label=>{label.visible=showLabels&&(!label.userData.mapOnly||activeView==='map')&&(!isCloseView(activeView)||label.userData.featured);});}
+  function updateLabels(){needsRender=true;city.labels.forEach(label=>{label.visible=showLabels&&(!label.userData.mapOnly||activeView==='map')&&(!isCloseView(activeView)||label.userData.featured);});city.mapLabels.forEach(label=>{label.visible=showLabels&&!isCloseView(activeView);});}
   function setView(name,immediate=false){
     needsRender=true;activeView=name;const view=views[name];
     scene.background.setHex(isCloseView(name)?0xc3d3df:0xe7e9e2);
@@ -86,5 +86,6 @@ try{
     origin.set(0,0,0).project(camera);north.set(0,0,-30).project(camera);
     compass.style.transform=`rotate(${Math.atan2(north.x-origin.x,north.y-origin.y)}rad)`;
     canvas.dataset.view=activeView;canvas.dataset.buildings=heightOn?'3d':'flat';canvas.dataset.trees=String(city.groups.trees.visible);
+    canvas.dataset.schoolForegroundTrees=String(city.intersection.schoolForegroundTreeCount);
   });
 }catch(error){console.error(error);loading.querySelector('p').textContent='無法建立 3D 場景，請確認瀏覽器支援 WebGL 2 並啟用硬體加速。';}
