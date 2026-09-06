@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#e7e9e2" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%233d5949'/%3E%3Cpath d='M7 24V12l8-4v16m2 0V5l8 4v15' fill='none' stroke='%23e5eed9' stroke-width='2'/%3E%3C/svg%3E" />
+  <title>龍德路街區 — Neighborhood in 3D</title>
+  <script type="module" crossorigin src="/longde-road-neighborhood/assets/index-C5ixM1ZI.js"></script>
+  <link rel="stylesheet" crossorigin href="/longde-road-neighborhood/assets/index-DI0ChSRH.css">
+</head>
+<body>
+  <main id="neighborhood">
+    <canvas id="city-canvas" tabindex="0" aria-label="街區 3D 模型，可拖曳旋轉、滾輪縮放，聚焦後以方向鍵平移"></canvas>
+    <div id="labels"></div>
+    <header class="city-header"><a class="wordmark" href="./">◫ <span>SPACE STUDIES</span></a><div class="header-right"><span class="status-dot"></span> NEIGHBORHOOD / 002 <a href="./">街區首頁 ↗</a></div></header>
+    <section class="intro"><div class="eyebrow">KAOHSIUNG · GUSHAN</div><h1>龍德路街區<span>從俯視圖，走進城市。</span></h1><p>沿著富農路，探索大廈、街角綠地<br>與龍華國小之間的日常風景。</p><div class="coordinate">22.656570° N &nbsp; 120.297072° E</div><div class="model-note"><span>◌</span> 已對照 Google Maps／街景・尺寸仍有估算</div></section>
+    <aside class="layers" aria-label="模型圖層"><span class="eyebrow">顯示圖層</span><button id="toggle-labels" aria-pressed="true"><span>地標標籤</span><i></i></button><button id="toggle-trees" aria-pressed="true"><span>街道綠意</span><i></i></button><button id="toggle-height" aria-pressed="true"><span>立體建築</span><i></i></button><div class="legend"><span><b class="swatch site"></b>定位地點</span><span><b class="swatch park"></b>綠地／校園</span></div></aside>
+    <div class="bottom-bar"><div class="view-meta"><span id="city-view-number">01</span><span id="city-view-name">街區鳥瞰</span><span class="meta-line"></span><span>示意重建，非測繪模型</span></div><nav class="city-controls" aria-label="街區視角"><button data-city-view="aerial" aria-pressed="true">◈ <span>街區鳥瞰</span></button><button data-city-view="map" aria-pressed="false">▦ <span>地圖俯視</span></button><button data-city-view="street" aria-pressed="false">⌖ <span>路口視角</span></button><span class="control-divider"></span><button id="city-reset" aria-label="重設視角">↺</button></nav><p class="city-hint">拖曳旋轉 <span>·</span> 滾輪縮放 <span>·</span> 右鍵拖曳平移</p></div>
+    <div class="orientation" aria-label="方向以原圖上方為北的假設繪製"><span>N</span><div>↑</div><small>依原圖方向</small></div>
+    <div id="city-loading" role="status"><span>◫</span><p>正在建立街區…</p></div>
+  </main>
+</body>
+</html>
