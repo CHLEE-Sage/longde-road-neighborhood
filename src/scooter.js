@@ -84,8 +84,21 @@ export function createScooter(materials,color,helmet=false,style='commuter'){
   const plate=add(new THREE.BoxGeometry(.018,.115,.18),materials.white,-.866,.435,0);plate.rotation.z=-.2;
   rod([-.71,.75,-.25],[-.88,.76,-.18],.016);rod([-.88,.76,-.18],[-.88,.76,.18],.016);rod([-.88,.76,.18],[-.71,.75,.25],.016);
   rod([-.17,.3,.14],[-.32,.015,.26],.018,rubber);
-  if(helmet){oval(paint,-.46,.925,0,.17,.16,.155);oval(materials.glass,-.325,.948,0,.065,.092,.142);}
+  if(helmet)group.add(createHelmet(materials,paint,'seat',style));
   group.scale.x=sport?1.05:retro?.96:1;
   group.name=`${style} scooter`;
+  return group;
+}
+
+export function createHelmet(materials,shellMaterial,position='mirror',style='commuter'){
+  const group=new THREE.Group();group.name=`Helmet on ${position}`;
+  const cap=new THREE.Mesh(new THREE.SphereGeometry(.17,24,16,0,Math.PI*2,0,Math.PI*.68),shellMaterial);cap.scale.z=.92;group.add(cap);
+  const liner=new THREE.Mesh(new THREE.SphereGeometry(.163,24,16,0,Math.PI*2,0,Math.PI*.68),materials.dark);liner.material=materials.dark.clone();liner.material.side=THREE.BackSide;group.add(liner);
+  const rim=new THREE.Mesh(new THREE.TorusGeometry(.1435,.012,6,24),materials.dark);rim.rotation.x=Math.PI/2;rim.position.y=-.091;rim.scale.y=.92;group.add(rim);
+  const visor=new THREE.Mesh(new THREE.SphereGeometry(1,16,10),materials.glass);visor.scale.set(.037,.074,.124);visor.position.set(.149,.022,0);group.add(visor);
+  const strap=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(0,-.07,-.13),new THREE.Vector3(.025,-.24,-.03),new THREE.Vector3(0,-.09,.13)]),16,.006,5,false),materials.dark);group.add(strap);
+  if(position==='seat'){group.position.set(-.43,style==='sport'?.97:.92,.035);group.rotation.y=-.55;strap.visible=false;}
+  else if(position==='handle'){group.position.set(.41,.91,-.32);group.rotation.set(.2,Math.PI,.65);}
+  else{group.position.set(.37,1.29,.327);group.rotation.set(-.17,.45,-.22);}
   return group;
 }

@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { X,Z,SCALE } from './city-geometry.js';
 import { referenceDetails,SCHOOL_FOREGROUND_TREES } from './reference-details.js';
-import { createScooter } from './scooter.js';
+import { createScooter,createHelmet } from './scooter.js';
 
 export const JUNCTION={u:602,v:547};
 
@@ -148,13 +148,22 @@ export function intersectionDetails(k){
     const seat=new THREE.Mesh(new THREE.BoxGeometry(.27,.045,.15),dark);seat.position.set(-.2,1,0);group.add(seat);return group;
   }
   const bikeTemplate=bike();
-  const scooters=[['commuter',0x293236,false],['retro',0xd9d2bb,true],['sport',0xc8caca,false],['commuter',0x8c959c,true],['retro',0x753f3c,false],['sport',0x343b46,true]].map(([style,color,helmet])=>createScooter(materials,color,helmet,style));
+  const scooterSpecs=[['commuter',0x293236],['retro',0xd9d2bb],['sport',0xc8caca],['commuter',0x8c959c],['retro',0x753f3c],['sport',0x343b46]];
+  const scooters=scooterSpecs.map(([style,color])=>createScooter(materials,color,false,style));
   const frontageMix=[0,3,1,0,2,5,3,4,0,2,3,1,5,0,2],schoolMix=[3,1,0,5,2,4,0];
+  const helmetPaint=[0x20262d,0x326cc2,0xd8d6cb].map(color=>new THREE.MeshStandardMaterial({color,roughness:.27,metalness:.15,side:THREE.DoubleSide}));
+  const frontageParking=[[-.4,0,.24],[.5,.2,.37],[.1,-.25,.16],[-.6,.2,.3],[.65,-.1,.43],[.3,.1,.27],[-.5,.25,.19],[.6,-.3,.4],[-.2,.15,.32],[.5,-.15,.21],[-.6,.25,.36],[.3,-.3,.15],[-.2,.1,.31],[.65,-.1,.42],[-.35,0,.23]];
+  const frontageHelmets=new Map([[2,['handle',2]],[5,['mirror',0]],[9,['seat',0]],[11,['handle',2]],[13,['mirror',1]],[14,['mirror',0]]]);
+  function parkedScooter(type,u,v,angle,helmet){
+    const model=scooters[type].clone(true);
+    if(helmet)model.add(createHelmet(materials,helmetPaint[helmet[1]],helmet[0],scooterSpecs[type][0]));
+    model.position.set(X(u),.333,Z(v));model.rotation.y=angle;vehicles.push(model);
+  }
   function place(template,u,v,angle,y=.49){const model=template.clone(true);model.position.set(X(u),y,Z(v));model.rotation.y=angle;vehicles.push(model);}
-  frontageMix.forEach((type,i)=>place(scooters[type],575.9,367+i*5.5,Math.PI-.35,.333));
+  frontageMix.forEach((type,i)=>{const [du,dv,angle]=frontageParking[i];parkedScooter(type,575.9+du,367+i*5.5+dv,Math.PI-angle,frontageHelmets.get(i));});
   for(let i=0;i<=15;i++)segment('roads','line',[571.5,364.25+i*5.5],[580.5,367.25+i*5.5],.35,.007,.343);
   segment('roads','line',[580.5,367.25],[580.5,449.75],.35,.007,.343);
-  schoolMix.forEach((type,i)=>place(scooters[type],640.5,636+i*5.5,-.35,.333));
+  schoolMix.forEach((type,i)=>{const [du,dv,angle]=frontageParking[i+4];parkedScooter(type,640.5-du,636+i*5.5+dv,-angle,i===2?['handle',0]:i===5?['seat',2]:undefined);});
   const van=new THREE.Group();
   for(const [w,h,d,x,y,z,tone]of [[3.1,1.35,1.55,0,1.1,0,'white'],[1.05,.65,1.57,-.88,1.38,0,'glass'],[1.25,.63,1.57,.58,1.37,0,'glass'],[.06,1.31,1.59,-.1,1.1,0,'white'],[3.15,.17,1.59,0,.48,0,'dark'],[.07,.28,.23,1.57,.84,.61,'red'],[.07,.28,.23,1.57,.84,-.61,'red']]){
     const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),materials[tone]);mesh.position.set(x,y,z);van.add(mesh);
@@ -174,7 +183,7 @@ export function intersectionDetails(k){
   const referenceInventory=referenceDetails(k,{canvasMaterial,panel,vehicles});
   // Bake repeated vehicle parts by shared material to keep the street light to render.
   const mergedParts=new Map();
-  for(const model of vehicles){model.updateMatrixWorld(true);model.traverse(obj=>{if(!obj.isMesh)return;const mat=obj.material;if(!mergedParts.has(mat))mergedParts.set(mat,[]);const geo=obj.geometry.index?obj.geometry.toNonIndexed():obj.geometry.clone();mergedParts.get(mat).push(geo.applyMatrix4(obj.matrixWorld));});}
+  for(const model of vehicles){model.updateMatrixWorld(true);model.traverseVisible(obj=>{if(!obj.isMesh)return;const mat=obj.material;if(!mergedParts.has(mat))mergedParts.set(mat,[]);const geo=obj.geometry.index?obj.geometry.toNonIndexed():obj.geometry.clone();mergedParts.get(mat).push(geo.applyMatrix4(obj.matrixWorld));});}
   for(const [mat,pieces]of mergedParts){const geometry=mergeGeometries(pieces);pieces.forEach(g=>g.dispose());if(!geometry)throw new Error('Vehicle geometry merge failed');const mesh=new THREE.Mesh(geometry,mat);mesh.castShadow=true;mesh.receiveShadow=true;groups.details.add(mesh);}
 
   // School-side hedge, rocks, utility wall and metal louver screen.
