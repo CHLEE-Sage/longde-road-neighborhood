@@ -35,7 +35,7 @@ try{
   controls.addEventListener('change',()=>{needsRender=true;});
   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
   function isCloseView(name){return ['street','junction','school','storefront'].includes(name);}
-  function updateLabels(){needsRender=true;city.labels.forEach(label=>{label.visible=showLabels&&activeView!=='storefront'&&(!label.userData.mapOnly||activeView==='map')&&(!isCloseView(activeView)||label.userData.featured);});city.mapLabels.forEach(label=>{label.visible=showLabels&&!isCloseView(activeView);});city.point.visible=activeView!=='storefront';}
+  function updateLabels(){needsRender=true;city.labels.forEach(label=>{label.visible=showLabels&&activeView!=='storefront'&&(!label.userData.mapOnly||activeView==='map')&&(!isCloseView(activeView)||label.userData.featured);});city.mapLabels.forEach(label=>{label.visible=showLabels&&!isCloseView(activeView);});city.point.visible=showLabels&&!isCloseView(activeView);}
   function setView(name,immediate=false){
     needsRender=true;activeView=name;const view=views[name];
     scene.background.setHex(isCloseView(name)?0xc3d3df:0xe7e9e2);

@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { X,Z,SCALE } from './city-geometry.js';
 import { referenceDetails,SCHOOL_FOREGROUND_TREES } from './reference-details.js';
+import { createScooter } from './scooter.js';
 
 export const JUNCTION={u:602,v:547};
 
@@ -32,7 +33,8 @@ export function intersectionDetails(k){
     polygon('ground','walk',[...arc,p(80,34),p(80,89),p(34,89)],.17,.31);
     path('ground','stone',arc.map(([u,v])=>[u,v,.44]),.065);
     const redArc=Array.from({length:25},(_,i)=>{const a=Math.PI+i/24*Math.PI/2;return [...p(48+15*Math.cos(a),48+15*Math.sin(a)),.34];});
-    path('roads','curbRed',[[...p(33,88),.34],...redArc,[...p(80,33),.34]],.065);
+    const redPoints=[p(33,88),...redArc.map(([u,v])=>[u,v]),p(80,33)];
+    for(let i=1;i<redPoints.length;i++)segment('roads','curbRed',redPoints[i-1],redPoints[i],.52,.006,.343);
     for(let u=36;u<78;u+=3.2)for(let v=36;v<86;v+=3.2){
       if(u<48&&v<48&&Math.hypot(u-48,v-48)>12.8)continue;
       box('ground','ledge',...p(u,v),3.08,3.08,.018,.485);
@@ -72,26 +74,50 @@ export function intersectionDetails(k){
   const person=pedestrianFace(false),countdown=pedestrianFace(true);
   function roadSign(u,v,y,cn,en,angle=0){
     const mat=canvasMaterial((ctx,w,h)=>{ctx.fillStyle='#288779';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#e1e9df';ctx.lineWidth=9;ctx.strokeRect(6,6,w-12,h-12);ctx.fillStyle='#fff';ctx.textAlign='center';ctx.font='bold 88px "Microsoft JhengHei",sans-serif';ctx.fillText(`← ${cn} →`,w/2,110);ctx.font='58px sans-serif';ctx.fillText(en,w/2,194);},512,230);
-    panel(mat,u,v,y,1.9,.85,angle);
+    box('details','steel',u-Math.sin(angle)*.13,v-Math.cos(angle)*.13,6.2,.3,.68,y-.34,angle);
+    panel(mat,u,v,y,1.4,.63,angle);
   }
-  for(const [u,v,angle,cn,en]of [[645,589,-Math.PI/2,'龍德路','Longde Rd.'],[556,505,0,'富農路','Funong Rd.'],[554,585,Math.PI/2,'龍德路','Longde Rd.'],[644,507,-Math.PI/2,'富農路','Funong Rd.']]){
-    ellipse('details','steel',u,v,.58,.58,5.7,.49);
+  const stripedMetal=new THREE.MeshStandardMaterial({map:stripe.map,roughness:.85});
+  function fixturePart(group,geo,mat,x,y,z){const obj=new THREE.Mesh(geo,mat);obj.position.set(x,y,z);group.add(obj);return obj;}
+  function poleBase(u,v,height){
+    const group=new THREE.Group();group.position.set(X(u),.49,Z(v));vehicles.push(group);
+    fixturePart(group,new THREE.CylinderGeometry(.064,.092,height,16),materials.steel,0,height/2,0);
+    fixturePart(group,new THREE.CylinderGeometry(.095,.22,.36,4),materials.steel,0,.18,0);
+    fixturePart(group,new THREE.BoxGeometry(.48,.09,.48),materials.stone,0,.045,0);
+    for(const x of [-.15,.15])for(const z of [-.15,.15])fixturePart(group,new THREE.CylinderGeometry(.02,.02,.07,6),materials.steel,x,.12,z);
+    fixturePart(group,new THREE.BoxGeometry(.13,.32,.026),materials.dark,0,.66,.091);
+    return group;
+  }
+  for(const [u,v,angle,cn,en]of [[645,589,-Math.PI/2,'龍德路','Longde Rd.'],[566,509,Math.PI/2,'富農路','Funong Rd.'],[554,585,Math.PI/2,'龍德路','Longde Rd.'],[644,507,-Math.PI/2,'富農路','Funong Rd.']]){
+    const pole=poleBase(u,v,5.2);
+    fixturePart(pole,new THREE.CylinderGeometry(.094,.094,1.28,24),stripedMetal,0,1.2,0);
+    for(const y of [2.15,3.18,3.78])fixturePart(pole,new THREE.CylinderGeometry(.105,.105,.045,16),materials.steel,0,y,0);
+    box('details','white',u-1,v,1.05,.7,.67,2.8,angle);
     box('details','signalGreen',u,v,2.1,2.5,1.0,2.25,angle);
     panel(u<602&&v<547?countdown:person,u+Math.sin(angle)*1.5,v+Math.cos(angle)*1.5,2.77,.43,.67,angle);
     box('details','signalGreen',u,v+Math.cos(angle)*.8,3.1,3.8,.07,3.28,angle);
-    panel(stripe,u+Math.sin(angle)*.7,v+Math.cos(angle)*.7,1.85,.24,1.35,angle);
-    roadSign(u+Math.cos(angle)*4.5+Math.sin(angle),v-Math.sin(angle)*4.5+Math.cos(angle),4.1,cn,en,angle);
+    box('details','signalGreen',u+Math.sin(angle)*.8,v+Math.cos(angle)*.8,2.8,3.1,.06,2.72,angle);
+    const signAngle=cn==='富農路'?0:angle;
+    roadSign(u+Math.sin(signAngle)*.7,v+Math.cos(signAngle)*.7,4.0,cn,en,signAngle);
     const direction=u<602?1:-1;
-    const arm=[[u,v,5.5],[u+direction*3,v,6.35],[u+direction*12,v,6.7],[u+direction*25,v,6.7]];path('details','steel',arm,.08);
+    const arm=[[u,v,5.08],[u+direction*2,v,5.64],[u+direction*6,v,5.94],[u+direction*19,v,6.02]];path('details','steel',arm,.065);
     const vehicleAngle=v<547?(u<602?0:-Math.PI/2):(u>602?Math.PI:Math.PI/2);
-    const hx=u+direction*23,hv=v,nx=Math.sin(vehicleAngle),nz=Math.cos(vehicleAngle),tx=Math.cos(vehicleAngle),tz=-Math.sin(vehicleAngle);
-    box('details','signalGreen',hx,hv,9.6,2.5,.49,6.45,vehicleAngle);
+    const head=new THREE.Group();head.position.set(X(u+direction*18),5.81,Z(v));head.rotation.y=vehicleAngle;vehicles.push(head);
+    fixturePart(head,new THREE.BoxGeometry(1.12,.09,.1),materials.steel,0,.12,-.22);
     for(let i=0;i<3;i++){
-      const delta=(i-1)*3.2,x=hx+tx*delta,z=hv+tz*delta,green=Math.abs(nz)>.5,active=green?2:0;
-      const light=new THREE.Mesh(new THREE.CircleGeometry(.135,18),new THREE.MeshBasicMaterial({color:i===active?(green?0x63d7a9:0xf26452):0x20352e}));light.rotation.y=vehicleAngle;light.position.set(X(x+nx*1.3),6.7,Z(z+nz*1.3));groups.details.add(light);
-      box('details','signalGreen',x+nx*2,z+nz*2,2.5,3,.065,6.88,vehicleAngle);
-      for(const s of [-1,1])box('details','signalGreen',x+tx*s*1.2+nx*2,z+tz*s*1.2+nz*2,.15,3,.3,6.59,vehicleAngle);
+      const x=(i-1)*.39,green=Math.abs(Math.cos(vehicleAngle))>.5,active=green?2:0;
+      const housing=fixturePart(head,new THREE.CylinderGeometry(.18,.18,.32,24),materials.signalGreen,x,0,0);housing.rotation.x=Math.PI/2;
+      fixturePart(head,new THREE.CircleGeometry(.145,24),new THREE.MeshBasicMaterial({color:i===active?(green?0x63d7a9:0xf26452):0x152823}),x,0,.166);
+      const hood=fixturePart(head,new THREE.CylinderGeometry(.177,.177,.25,24,1,true),materials.signalGreen,x,0,.29);hood.rotation.x=Math.PI/2;
     }
+  }
+  // Separate swept-neck streetlights are visible between the shop bays.
+  for(const [u,v]of [[569,451],[569,405]]){
+    const pole=poleBase(u,v,5.0);
+    path('details','steel',[[u,v,5.4],[u+.6,v,5.88],[u+2.4,v,6.35],[u+5.7,v,6.69],[u+9,v,6.89]],.055);
+    fixturePart(pole,new THREE.BoxGeometry(.65,.07,.2),materials.steel,9*SCALE,6.42,0).rotation.z=.12;
+    fixturePart(pole,new THREE.BoxGeometry(.5,.018,.15),materials.white,9*SCALE,6.372,0).rotation.z=.12;
+    fixturePart(pole,new THREE.CylinderGeometry(.096,.096,.08,16),stripedMetal,0,.35,0);
   }
   // Signal controller and school warning signs on the southeastern pavement.
   box('details','signalGreen',650,594,3.2,3,1.5,.49);
@@ -121,20 +147,12 @@ export function intersectionDetails(k){
     tube(new THREE.Vector3(-.2,.79,0),new THREE.Vector3(-.2,.98,0),.021,steel,group);tube(new THREE.Vector3(.42,.88,0),new THREE.Vector3(.43,1.1,0),.018,steel,group);tube(new THREE.Vector3(.43,1.1,-.23),new THREE.Vector3(.43,1.1,.23),.018,steel,group);
     const seat=new THREE.Mesh(new THREE.BoxGeometry(.27,.045,.15),dark);seat.position.set(-.2,1,0);group.add(seat);return group;
   }
-  function scooter(color){
-    const group=new THREE.Group(),paint=new THREE.MeshStandardMaterial({color,roughness:.45,metalness:.2});
-    const part=(w,h,d,x,y,z,mat)=>{const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);mesh.position.set(x,y,z);group.add(mesh);return mesh;};
-    for(const x of [-.52,.55]){const wheel=new THREE.Mesh(new THREE.CylinderGeometry(.21,.21,.14,16),materials.dark);wheel.rotation.x=Math.PI/2;wheel.position.set(x,.24,0);group.add(wheel);const hub=new THREE.Mesh(new THREE.CylinderGeometry(.12,.12,.155,12),materials.silver||materials.steel);hub.rotation.x=Math.PI/2;hub.position.copy(wheel.position);group.add(hub);}
-    part(.7,.4,.51,-.3,.53,0,paint);part(.75,.1,.44,-.22,.79,0,materials.dark);part(.43,.09,.47,.21,.31,0,paint);
-    const apron=part(.17,.64,.43,.47,.7,0,paint);apron.rotation.z=.16;part(.28,.18,.42,.4,1.05,0,paint);part(.02,.095,.26,.55,1.06,0,materials.white);
-    tube(new THREE.Vector3(.34,1.1,-.32),new THREE.Vector3(.34,1.1,.32),.027,materials.dark,group);
-    for(const z of [-.29,.29]){tube(new THREE.Vector3(.35,1.1,z),new THREE.Vector3(.3,1.32,z*1.2),.012,materials.steel,group);part(.13,.09,.035,.3,1.34,z*1.2,materials.dark);}
-    part(.025,.075,.26,-.68,.59,0,materials.red);return group;
-  }
-  const bikeTemplate=bike(),scooters=[0xc8caca,0x536980,0xb36c60,0x3a494e].map(scooter);
+  const bikeTemplate=bike(),scooters=[0xc8caca,0x536980,0x753f3c,0x293236].map((color,i)=>createScooter(materials,color,i%2===1));
   function place(template,u,v,angle,y=.49){const model=template.clone(true);model.position.set(X(u),y,Z(v));model.rotation.y=angle;vehicles.push(model);}
-  for(let i=0;i<15;i++){place(scooters[i%4],574,355+i*8,-.55,.33);box('roads','line',574,351+i*8,10,.3,.018,.335);}
-  for(let i=0;i<7;i++)place(scooters[(i+2)%4],646,636+i*9,.5);
+  for(let i=0;i<15;i++)place(scooters[i%4],575.9,367+i*5.5,Math.PI-.35,.333);
+  for(let i=0;i<=15;i++)segment('roads','line',[571.5,364.25+i*5.5],[580.5,367.25+i*5.5],.35,.007,.343);
+  segment('roads','line',[580.5,367.25],[580.5,449.75],.35,.007,.343);
+  for(let i=0;i<7;i++)place(scooters[(i+2)%4],640.5,636+i*5.5,-.35,.333);
   const van=new THREE.Group();
   for(const [w,h,d,x,y,z,tone]of [[3.1,1.35,1.55,0,1.1,0,'white'],[1.05,.65,1.57,-.88,1.38,0,'glass'],[1.25,.63,1.57,.58,1.37,0,'glass'],[.06,1.31,1.59,-.1,1.1,0,'white'],[3.15,.17,1.59,0,.48,0,'dark'],[.07,.28,.23,1.57,.84,.61,'red'],[.07,.28,.23,1.57,.84,-.61,'red']]){
     const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),materials[tone]);mesh.position.set(x,y,z);van.add(mesh);
@@ -154,7 +172,7 @@ export function intersectionDetails(k){
   const referenceInventory=referenceDetails(k,{canvasMaterial,panel,vehicles});
   // Bake repeated vehicle parts by shared material to keep the street light to render.
   const mergedParts=new Map();
-  for(const model of vehicles){model.updateMatrixWorld(true);model.traverse(obj=>{if(!obj.isMesh)return;const mat=obj.material;if(!mergedParts.has(mat))mergedParts.set(mat,[]);mergedParts.get(mat).push(obj.geometry.clone().applyMatrix4(obj.matrixWorld));});}
+  for(const model of vehicles){model.updateMatrixWorld(true);model.traverse(obj=>{if(!obj.isMesh)return;const mat=obj.material;if(!mergedParts.has(mat))mergedParts.set(mat,[]);const geo=obj.geometry.index?obj.geometry.toNonIndexed():obj.geometry.clone();mergedParts.get(mat).push(geo.applyMatrix4(obj.matrixWorld));});}
   for(const [mat,pieces]of mergedParts){const geometry=mergeGeometries(pieces);pieces.forEach(g=>g.dispose());if(!geometry)throw new Error('Vehicle geometry merge failed');const mesh=new THREE.Mesh(geometry,mat);mesh.castShadow=true;mesh.receiveShadow=true;groups.details.add(mesh);}
 
   // School-side hedge, rocks, utility wall and metal louver screen.

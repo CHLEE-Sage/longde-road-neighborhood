@@ -130,8 +130,9 @@ export function createTaichingCorner(k){
     sign(x===5.95?listings:leaflet,x,.89,1.138,.67,1.17);
     tube(black,[[x-.28,.25,.71],[x-.28,1.43,1.03]],.025);tube(black,[[x+.28,.25,.71],[x+.28,1.43,1.03]],.025);
   }
-  mesh(new THREE.CylinderGeometry(.29,.19,.64,16),terracotta,11.74,.52,.8);
-  mesh(new THREE.CylinderGeometry(.27,.27,.025,16),soil,11.74,.848,.8);
+  const potProfile=[[.17,0],[.2,.025],[.29,.6],[.31,.61],[.31,.65],[.275,.65],[.265,.59],[.19,.09],[.17,0]].map(([r,y])=>new THREE.Vector2(r,y));
+  mesh(new THREE.LatheGeometry(potProfile,32),terracotta,11.74,.2,.8);
+  mesh(new THREE.CylinderGeometry(.264,.264,.02,24),soil,11.74,.78,.8);
   tube(bronze,[[11.74,.85,.8],[11.76,1.3,.8],[11.72,1.84,.8]],.025);
   for(let i=0;i<23;i++){const obj=mesh(new THREE.IcosahedronGeometry(.11,1),leaf,11.74+(rand()-.5)*.58,1.3+rand()*.63,.8+(rand()-.5)*.49);obj.scale.y=.65;}
   // Tall Art Deco wall lights: pale glass, brass grid, tapered lower brackets.
@@ -163,8 +164,8 @@ export function createTaichingCorner(k){
     block(soil,x,.19,2.65,2.72,.08,1.18);
     for(const dx of [-1.37,1.37])block(pavement,x+dx,.22,2.65,.08,.12,1.25);
     for(const dz of [-.63,.63])block(pavement,x,.22,2.65+dz,2.8,.12,.08);
-    for(const dz of [-.42,.42])block(hedge,x,.48,2.65+dz,2.59,.5,.29);
-    for(const dx of [-1.16,1.16])block(hedge,x+dx,.48,2.65,.32,.5,1.05);
+    for(const dz of [-.42,.42])block(hedge,x,.44,2.65+dz,2.5,.4,.25);
+    for(const dx of [-1.16,1.16])block(hedge,x+dx,.44,2.65,.25,.4,.94);
     for(let j=0;j<95;j++){const side=j%4,dx=side<2?(rand()-.5)*2.55:(side===2?-1.17:1.17),dz=side<2?(side===0?-.43:.43):(rand()-.5)*.94;const obj=mesh(new THREE.IcosahedronGeometry(.13,0),j%5?leaf:hedge,x+dx,.68+(rand()-.5)*.14,2.65+dz);obj.scale.set(1,.67,.83);}
     for(let j=0;j<10;j++){const bloom=mesh(new THREE.IcosahedronGeometry(.035,0),flowerMaterial,x-1.15+j*.25,.73,3.12);bloom.castShadow=false;}
   }

@@ -108,10 +108,11 @@ export function facadeDetails(k,towers){
 export function streetDetails(k){
   const {box,ellipse,shrub,path,materials,groups}=k;
   for(let u=665;u<814;u+=10)for(let v=542;v<562;v+=7){box('ground','ledge',u,v,9.7,6.7,.055,.31);}
-  const planterGeometry=new THREE.CylinderGeometry(.78,.43,.6,24);
+  const planterGeometry=new THREE.LatheGeometry([[.25,0],[.29,.07],[.2,.16],[.28,.22],[.43,.44],[.47,.54],[.48,.6],[.42,.62],[.4,.54],[.24,.26],[.2,.2]].map(([r,y])=>new THREE.Vector2(r,y)),32);
   for(const u of [679,707,759,795]){
-    const pot=new THREE.Mesh(planterGeometry,materials.stone);pot.position.set(X(u),.66,Z(551));pot.castShadow=true;groups.details.add(pot);
-    ellipse('details','ledge',u,551,3.7,3.7,.16,.95);shrub(u,551,3.2,1.2,1.05);
+    const pot=new THREE.Mesh(planterGeometry,materials.stone);pot.position.set(X(u),.31,Z(551));pot.castShadow=true;groups.details.add(pot);
+    ellipse('details','trunk',u,551,1.72,1.72,.035,.83);shrub(u,551,1.9,.66,.85);
+    for(let i=0;i<12;i++){const a=i/12*Math.PI*2;shrub(u+Math.cos(a)*1.45,551+Math.sin(a)*1.45,.6,.3,1.02);}
   }
   for(const u of [673,687,782,796]){ellipse('details','steel',u,565,.46,.46,.85,.25);ellipse('details','ledge',u,565,.53,.53,.12,1.05);}
   for(let v=609;v<1140;v+=19){box('details','stone',648,v,2,2,1.4,.3);box('details','steel',648,v+9,1,17,.07,1.2);box('details','steel',648,v+9,1,17,.07,.8);}
