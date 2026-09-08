@@ -147,12 +147,14 @@ export function intersectionDetails(k){
     tube(new THREE.Vector3(-.2,.79,0),new THREE.Vector3(-.2,.98,0),.021,steel,group);tube(new THREE.Vector3(.42,.88,0),new THREE.Vector3(.43,1.1,0),.018,steel,group);tube(new THREE.Vector3(.43,1.1,-.23),new THREE.Vector3(.43,1.1,.23),.018,steel,group);
     const seat=new THREE.Mesh(new THREE.BoxGeometry(.27,.045,.15),dark);seat.position.set(-.2,1,0);group.add(seat);return group;
   }
-  const bikeTemplate=bike(),scooters=[0xc8caca,0x536980,0x753f3c,0x293236].map((color,i)=>createScooter(materials,color,i%2===1));
+  const bikeTemplate=bike();
+  const scooters=[['commuter',0x293236,false],['retro',0xd9d2bb,true],['sport',0xc8caca,false],['commuter',0x8c959c,true],['retro',0x753f3c,false],['sport',0x343b46,true]].map(([style,color,helmet])=>createScooter(materials,color,helmet,style));
+  const frontageMix=[0,3,1,0,2,5,3,4,0,2,3,1,5,0,2],schoolMix=[3,1,0,5,2,4,0];
   function place(template,u,v,angle,y=.49){const model=template.clone(true);model.position.set(X(u),y,Z(v));model.rotation.y=angle;vehicles.push(model);}
-  for(let i=0;i<15;i++)place(scooters[i%4],575.9,367+i*5.5,Math.PI-.35,.333);
+  frontageMix.forEach((type,i)=>place(scooters[type],575.9,367+i*5.5,Math.PI-.35,.333));
   for(let i=0;i<=15;i++)segment('roads','line',[571.5,364.25+i*5.5],[580.5,367.25+i*5.5],.35,.007,.343);
   segment('roads','line',[580.5,367.25],[580.5,449.75],.35,.007,.343);
-  for(let i=0;i<7;i++)place(scooters[(i+2)%4],640.5,636+i*5.5,-.35,.333);
+  schoolMix.forEach((type,i)=>place(scooters[type],640.5,636+i*5.5,-.35,.333));
   const van=new THREE.Group();
   for(const [w,h,d,x,y,z,tone]of [[3.1,1.35,1.55,0,1.1,0,'white'],[1.05,.65,1.57,-.88,1.38,0,'glass'],[1.25,.63,1.57,.58,1.37,0,'glass'],[.06,1.31,1.59,-.1,1.1,0,'white'],[3.15,.17,1.59,0,.48,0,'dark'],[.07,.28,.23,1.57,.84,.61,'red'],[.07,.28,.23,1.57,.84,-.61,'red']]){
     const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),materials[tone]);mesh.position.set(x,y,z);van.add(mesh);
