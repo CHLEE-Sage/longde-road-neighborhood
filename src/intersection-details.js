@@ -60,7 +60,7 @@ export function intersectionDetails(k){
     segment('roads','line',[580,side<0?350:610],[580,side<0?482:732],.65,.018,.335);
     segment('roads','line',[624,side<0?350:610],[624,side<0?482:732],.65,.018,.335);
   }
-  for(const slope of [-1,1])for(const edge of [-1,1])segment('roads','line',[571+edge*3,547-slope*31-edge*slope*3],[633+edge*3,547+slope*31-edge*slope*3],.7,.016,.34);
+  for(const slope of [-1,1])for(const edge of [-1,1])segment('roads','crosswalkPaint',[571+edge*3,547-slope*31-edge*slope*3],[633+edge*3,547+slope*31-edge*slope*3],.7,.007,.34);
   segment('roads','line',[547,550],[547,579],1.2,.018,.335);
   segment('roads','line',[657,515],[657,544],1.2,.018,.335);
   for(const [u,v]of [[586,479],[618,617]]){

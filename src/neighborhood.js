@@ -27,7 +27,7 @@ try{
     aerial:{position:[356,352,431],target:[0,14,-2],fov:42,name:'街區鳥瞰',number:'01'},
     map:{position:[0,610,.02],target:[0,0,0],fov:37,name:'地圖俯視',number:'02'},
     street:{position:[-53,2.6,-19],target:[-54,5,-33],fov:75,name:'入口招牌與貨運車廂',number:'03'},
-    junction:{position:[-82.34,2.4,-20.5],target:[-82.34,4,-75],fov:86,name:'龍德路 × 富農路',number:'04'},
+    junction:{position:[-78.43,3.4,-27.6],target:[-88.09,1.1,-36.8],fov:72,name:'龍德路 × 富農路',number:'04'},
     school:{position:[-77,2.0,-19],target:[-64,2.4,-13],fov:72,name:'校園街角與自行車架',number:'05'},
     storefront:{position:city.storefront.viewPosition,target:city.storefront.viewTarget,fov:65,name:'台慶街角・圓窗與金色門廊',number:'06'},
   };

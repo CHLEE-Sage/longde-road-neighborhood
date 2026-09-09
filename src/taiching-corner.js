@@ -175,10 +175,16 @@ export function createTaichingCorner(k){
     mesh(new THREE.CylinderGeometry(.2,.14,.08,12),bollardCap,x,.64,z);
   }
   // Patinated folded vertical sculpture on its dark rectangular plinth.
-  block(darkStone,6.4,.26,2.65,1.42,.3,1.08);
-  const sculpture=new THREE.Shape([new THREE.Vector2(-.2,0),new THREE.Vector2(.18,0),new THREE.Vector2(.33,1.44),new THREE.Vector2(.13,2.91),new THREE.Vector2(-.16,2.5),new THREE.Vector2(-.05,1.38)]);
-  mesh(new THREE.ExtrudeGeometry(sculpture,{depth:.18,bevelEnabled:true,bevelThickness:.025,bevelSize:.02,bevelSegments:1}),bronze,6.4,.43,2.55);
-  tube(bronze,[[6.28,.43,2.72],[6.43,1.32,2.59],[6.74,2.12,2.52],[6.56,3.28,2.54]],.053);
+  const granite=darkStone.clone();granite.map=stone.map;granite.bumpMap=stone.map;granite.bumpScale=.006;
+  block(granite,6.4,.27,2.65,1.42,.22,1.08);block(granite,6.4,.398,2.65,1.47,.036,1.12);
+  const sculptureMetal=bronze.clone();sculptureMetal.side=THREE.DoubleSide;
+  for(const phase of [0,Math.PI]){
+    const vertices=[],indices=[];
+    for(let j=0;j<=24;j++){const t=j/24,a=t*2.7+phase,r=.08+.07*Math.sin(t*Math.PI),width=.07+.035*Math.sin(t*Math.PI);for(const side of [-1,1])vertices.push(Math.sin(a)*r+Math.cos(a)*width*side,t*2.85,Math.cos(a)*r-Math.sin(a)*width*side);}
+    for(let j=0;j<24;j++){const a=j*2;indices.push(a,a+1,a+3,a,a+3,a+2);}
+    const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(new Float32Array(50*2),2));geo.setIndex(indices);geo.computeVertexNormals();mesh(geo,sculptureMetal,6.4,.42,2.65);
+  }
+  for(let x=2.5;x<35.5;x+=.82){if(Math.abs(x-6.4)<.85)continue;block(granite,x,.13,3.82,.8,.16,.24);block(pavement,x,.218,3.8,.8,.024,.26);}
   // Named foreground trees, separate from the generated background street rows.
   for(const x of treeXs){
     const u=554+2.65/SCALE,v=504-x/SCALE;
