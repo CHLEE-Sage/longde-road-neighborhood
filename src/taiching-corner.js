@@ -72,13 +72,41 @@ export function createTaichingCorner(k){
   for(let i=0;i<12;i++){const a=i/12*Math.PI*2;tube(darkStone,[[2.65+Math.cos(a)*.96,7.45+Math.sin(a)*.96,.12],[2.65+Math.cos(a)*1.4,7.45+Math.sin(a)*1.4,.65]],.009);}
   for(const x of [1.35,2.55,3.75])block(darkStone,x,2.5,.418,.009,4.4,.008);
   for(const x of [2.2,2.65,3.1])block(black,x,7.45,-.13,.025,1.15,.025);
-  // South return: deep horizontal opening, circular glazing and balcony rail.
+  // The return has a recessed enclosure; openings must not reveal unrelated buildings behind it.
+  const returnStone=stone.clone(),returnGlass=doorGlass.clone(),railMetal=m(0x84928d,.36,.55);
+  returnGlass.color.setHex(0xa5b7b0);returnGlass.roughness=.27;
+  block(stone,.36,4.9,-5.3,.2,9.8,10.6);
   block(stone,-.15,8.95,-5.1,.8,1.2,10);block(stone,-.15,1.4,-5.1,.8,2.8,10);
-  for(const z of [-1.1,-5.8,-9.8])block(stone,-.15,5.1,z,.8,6.5,1.0);
-  block(black,-.4,4.8,-5,.1,4,7.8);
-  const sideDisc=mesh(new THREE.CircleGeometry(.95,36),black,-.7,7,-6);sideDisc.rotation.y=-Math.PI/2;
-  const sideRing=mesh(new THREE.TorusGeometry(1.12,.16,8,48),stone,-.76,7,-6);sideRing.rotation.y=-Math.PI/2;
-  block(darkStone,-.85,4.15,-5,.22,.75,8.5);for(let i=0;i<16;i++)block(black,-.98,4.83,-8.7+i*.49,.055,.65,.055);
+  block(stone,-.15,9.81,-5.3,.8,.62,10.6);
+  for(const z of [-1.1,-9.8])block(stone,-.15,5.1,z,.8,6.5,1.0);
+  block(stone,-.15,3.6,-6,.8,1.8,2.9);
+  const returnPanel=new THREE.Shape([new THREE.Vector2(-1.45,4.5),new THREE.Vector2(1.45,4.5),new THREE.Vector2(1.45,9.55),new THREE.Vector2(-1.45,9.55)]);
+  const returnHole=new THREE.Path();returnHole.absarc(0,7,1.27,0,Math.PI*2,true);returnPanel.holes.push(returnHole);
+  const stonePanel=mesh(new THREE.ExtrudeGeometry(returnPanel,{depth:.12,bevelEnabled:false}),returnStone,-.55,0,-6);stonePanel.rotation.y=-Math.PI/2;
+  const returnReveal=mesh(new THREE.LatheGeometry([[1.27,.68],[1.24,.65],[.87,.1],[.87,-.14]].map(([r,d])=>new THREE.Vector2(r,d)),64),revealMaterial,0,7,-6);returnReveal.rotation.z=Math.PI/2;
+  const sideDisc=mesh(new THREE.CircleGeometry(.88,48),returnGlass,.15,7,-6);sideDisc.rotation.y=-Math.PI/2;
+  for(let i=0;i<12;i++){const a=i/12*Math.PI*2;tube(darkStone,[[-.67,7+Math.cos(a)*1.255,-6+Math.sin(a)*1.255],[-.105,7+Math.cos(a)*.88,-6+Math.sin(a)*.88]],.009);}
+  for(const [z,width]of [[-8.15,1.75],[-3.25,2.45]]){
+    block(black,.15,6.3,z,.12,3.8,width+.12);block(returnGlass,.075,6.3,z,.025,3.62,width);
+    block(returnGlass,.075,3.32,z,.025,.96,width);
+    for(const offset of [-width/2,0,width/2])block(railMetal,.045,6.3,z+offset,.035,3.75,.04);
+    for(const y of [4.48,6.35,8.12])block(railMetal,.045,y,z,.035,.04,width);
+  }
+  block(returnStone,-.8,3.89,-5.25,.7,.22,8.9);
+  block(railMetal,-1.03,4.89,-5.25,.055,.055,8.8);
+  const balconyGlass=m(0x5d7775,.35,.25);
+  for(let i=0;i<10;i++){
+    const z=-9.2+i*.88;
+    block(balconyGlass,-1.005,4.39,z,.027,.8,.81);
+    block(railMetal,-1.05,4.4,z-.435,.05,1.02,.035);
+  }
+  block(stone,1.22,8.29,-5.25,2.42,.16,8.7);
+  for(let y=.65;y<9.5;y+=.92){
+    if(y<2.8||y>8.4)block(darkStone,-.556,y,-5.2,.009,.01,9.6);
+    for(const z of [-1.1,-9.8])block(darkStone,-.556,y,z,.009,.01,.98);
+    if(y<5.7||y>8.3)block(darkStone,-.677,y,-6,.009,.01,2.86);
+  }
+  for(let z=-9.5;z<-.8;z+=1.23)block(darkStone,-.556,1.4,z,.01,2.74,.009);
   // Beige narrow-course cladding and recessed green window bays above the podium.
   block(cream,18,18.55,-5.3,36,17,10.6);
   for(let row=0;row<5;row++)for(let col=0;col<10;col++){
