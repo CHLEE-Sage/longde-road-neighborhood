@@ -26,17 +26,16 @@ export function createTaichingCorner(k){
   function graphic(paint,w=1024,h=512){const tex=texture(paint,w,h);tex.wrapS=tex.wrapT=THREE.ClampToEdgeWrapping;return new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide});}
   function sign(mat,x,y,z,w,h){return mesh(new THREE.PlaneGeometry(w,h),mat,x,y,z);}
   function logo(ctx,cx,cy,r){ctx.fillStyle='#2b62a5';ctx.beginPath();ctx.arc(cx,cy,r,0,7);ctx.fill();ctx.strokeStyle='#dcb564';ctx.lineWidth=r*.12;ctx.beginPath();ctx.ellipse(cx,cy+r*.09,r*.75,r*.38,-.6,0,6);ctx.stroke();ctx.beginPath();ctx.arc(cx-r*.1,cy-r*.57,r*.13,0,7);ctx.fillStyle='#dcb564';ctx.fill();}
-  const brand=graphic((ctx,w,h)=>{ctx.fillStyle='#1864ad';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#d8b166';ctx.lineWidth=12;ctx.strokeRect(6,6,w-12,h-12);logo(ctx,133,145,104);ctx.fillStyle='#eed799';ctx.font='bold 25px Arial';ctx.fillText('TAICHING REALTY INC.',277,66);ctx.fillStyle='#fff';ctx.font='bold 84px "Microsoft JhengHei",sans-serif';ctx.fillText('台慶不動產',267,163);ctx.fillStyle='#e4d692';ctx.font='30px "Microsoft JhengHei",sans-serif';ctx.fillText('農十六龍德加盟店',280,224);ctx.fillText('5869685',780,224);},1024,288);
+  const referencePhone='555-1333';
+  const brand=graphic((ctx,w,h)=>{ctx.fillStyle='#1864ad';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#d8b166';ctx.lineWidth=12;ctx.strokeRect(6,6,w-12,h-12);logo(ctx,133,145,104);ctx.fillStyle='#eed799';ctx.font='bold 25px Arial';ctx.fillText('TAICHING REALTY INC.',277,66);ctx.fillStyle='#fff';ctx.font='bold 84px "Microsoft JhengHei",sans-serif';ctx.fillText('台慶不動產',267,163);ctx.fillStyle='#e4d692';ctx.font='30px "Microsoft JhengHei",sans-serif';ctx.fillText('農十六龍德加盟店',280,224);ctx.fillText(referencePhone,780,224);},1024,288);
   const upperBrand=graphic((ctx,w,h)=>{
-    ctx.fillStyle='#1468ad';ctx.fillRect(0,0,w,h);ctx.fillStyle='#e0b35a';ctx.fillRect(0,h-15,w,15);
-    ctx.fillStyle='#252f31';for(const x of [143,874])ctx.fillRect(x,0,14,h);
-    ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='bold 88px "Microsoft JhengHei",sans-serif';ctx.fillText('台慶不動產',515,178);
-    ctx.fillStyle='#efcf8b';ctx.font='bold 38px Arial';ctx.fillText('TAICHING REALTY INC.',515,253);
-    ctx.fillStyle='#fff';ctx.font='bold 100px Arial';ctx.fillText('5 8 6 9 6 8 5',515,390);
-    ctx.font='bold 88px "Microsoft JhengHei",sans-serif';for(const [text,x]of [['農十六',71],['龍德店',955]])[...text].forEach((char,i)=>ctx.fillText(char,x,123+i*140));
+    const gradient=ctx.createLinearGradient(0,0,w,0);gradient.addColorStop(0,'#3767a0');gradient.addColorStop(.5,'#9fcddd');gradient.addColorStop(1,'#3966a4');ctx.fillStyle=gradient;ctx.fillRect(0,0,w,h);
+    ctx.textAlign='center';ctx.strokeStyle='#675627';ctx.lineWidth=10;ctx.fillStyle='#e6c657';ctx.font='bold 93px "Microsoft JhengHei",sans-serif';
+    for(const [text,y]of [['菁英招募中',133],['農十六龍德加盟店',267]]){ctx.strokeText(text,512,y,875);ctx.fillText(text,512,y,875);}
+    ctx.font='bold 157px Arial';ctx.lineWidth=12;ctx.strokeStyle='#eeeade';ctx.strokeText(referencePhone,512,453);ctx.fillStyle='#b84e42';ctx.fillText(referencePhone,512,453);
   });
   const listings=graphic((ctx,w,h)=>{ctx.fillStyle='#244c89';ctx.fillRect(0,0,w,h);ctx.fillStyle='#ede7d3';ctx.font='bold 62px "Microsoft JhengHei",sans-serif';ctx.textAlign='center';ctx.fillText('徵求屋主',w/2,83);for(let row=0;row<4;row++)for(let col=0;col<4;col++){const x=25+col*123,y=117+row*130;ctx.fillStyle='#f3ecd9';ctx.fillRect(x,y,102,112);ctx.fillStyle='#9ac0c7';ctx.fillRect(x+7,y+7,88,46);ctx.fillStyle='#c1b3a0';ctx.fillRect(x+19,y+25,60,25);ctx.fillStyle='#677478';for(let i=0;i<3;i++)ctx.fillRect(x+9,y+66+i*10,77-i*9,3);}ctx.fillStyle='white';ctx.font='bold 72px "Microsoft JhengHei",sans-serif';ctx.fillText('台慶不動產',w/2,750);},512,800);
-  const doorAd=graphic((ctx,w,h)=>{ctx.fillStyle='#dadbc1';ctx.fillRect(0,0,w,h);ctx.fillStyle='#2e599a';ctx.fillRect(0,h*.62,w,h*.38);ctx.textAlign='center';ctx.fillStyle='#496865';ctx.font='bold 55px "Microsoft JhengHei",sans-serif';ctx.fillText('房屋・土地',w/2,87);ctx.fillStyle='#caa760';ctx.fillRect(45,119,w-90,120);ctx.fillStyle='#718c8d';for(let i=0;i<6;i++)ctx.fillRect(37,275+i*35,w-74,6);ctx.fillStyle='white';ctx.font='bold 60px "Microsoft JhengHei",sans-serif';ctx.fillText('台慶不動產',w/2,571);ctx.font='70px Arial';ctx.fillText('5869685',w/2,682);},512,768);
+  const doorAd=graphic((ctx,w,h)=>{ctx.fillStyle='#dadbc1';ctx.fillRect(0,0,w,h);ctx.fillStyle='#2e599a';ctx.fillRect(0,h*.62,w,h*.38);ctx.textAlign='center';ctx.fillStyle='#496865';ctx.font='bold 55px "Microsoft JhengHei",sans-serif';ctx.fillText('房屋・土地',w/2,87);ctx.fillStyle='#caa760';ctx.fillRect(45,119,w-90,120);ctx.fillStyle='#718c8d';for(let i=0;i<6;i++)ctx.fillRect(37,275+i*35,w-74,6);ctx.fillStyle='white';ctx.font='bold 60px "Microsoft JhengHei",sans-serif';ctx.fillText('台慶不動產',w/2,571);ctx.font='70px Arial';ctx.fillText(referencePhone,w/2,682);},512,768);
   function educationLogo(ctx,x,y,r){ctx.fillStyle='#238cbb';ctx.beginPath();ctx.ellipse(x,y,r*.7,r,0,0,7);ctx.fill();ctx.fillStyle='#6aab6b';ctx.beginPath();ctx.moveTo(x-r*.5,y+r*.7);ctx.lineTo(x+r*.75,y-r*.8);ctx.lineTo(x+r*.6,y+r*.7);ctx.fill();}
   const baishi=graphic((ctx,w,h)=>{ctx.fillStyle='#ecece0';ctx.fillRect(0,0,w,h);educationLogo(ctx,95,108,65);ctx.fillStyle='#4e5652';ctx.font='34px "Microsoft JhengHei",sans-serif';ctx.fillText('百世教育科技股份有限公司附設',190,87);ctx.fillText('高雄市私立百世技藝文理短期補習班',190,136);ctx.font='20px "Microsoft JhengHei",sans-serif';ctx.fillText('百世資優數學　｜　主動學習・小組課輔',190,182);},1024,220);
   const learning=graphic((ctx,w,h)=>{
@@ -65,12 +64,14 @@ export function createTaichingCorner(k){
   block(darkStone,18,9.95,0,37,.4,2.1);block(stone,18,9.68,0,37,.25,1.8);
   block(stone,2.5,2.4,-.3,4.2,4.8,1.4);
   const front=new THREE.Shape();front.moveTo(.8,4.8);front.lineTo(4.5,4.8);front.lineTo(4.5,9.45);front.lineTo(.8,9.45);front.closePath();
-  const hole=new THREE.Path();hole.absarc(2.65,7.45,.94,0,Math.PI*2,true);front.holes.push(hole);
+  const hole=new THREE.Path();hole.absarc(2.65,7.45,1.42,0,Math.PI*2,true);front.holes.push(hole);
   mesh(new THREE.ExtrudeGeometry(front,{depth:.7,bevelEnabled:false}),stone,0,0,-.1);
   mesh(new THREE.CircleGeometry(.97,48),black,2.65,7.45,-.15);
-  const ring=new THREE.Shape();ring.absarc(0,0,1.42,0,Math.PI*2);const inner=new THREE.Path();inner.absarc(0,0,.97,0,Math.PI*2,true);ring.holes.push(inner);
-  mesh(new THREE.ExtrudeGeometry(ring,{depth:.12,bevelEnabled:true,bevelThickness:.03,bevelSize:.03,bevelSegments:1}),stone,2.65,7.45,.61);
-  for(let i=0;i<12;i++){const a=i/12*Math.PI*2;tube(darkStone,[[2.65+Math.cos(a)*.99,7.45+Math.sin(a)*.99,.76],[2.65+Math.cos(a)*1.41,7.45+Math.sin(a)*1.41,.76]],.011);}
+  const revealMaterial=stone.clone();revealMaterial.side=THREE.DoubleSide;
+  const reveal=mesh(new THREE.LatheGeometry([[1.42,.6],[1.42,.64],[1.38,.62],[.95,.1],[.95,-.1]].map(([r,z])=>new THREE.Vector2(r,z)),64),revealMaterial,2.65,7.45,0);reveal.rotation.x=Math.PI/2;
+  for(let i=0;i<12;i++){const a=i/12*Math.PI*2;tube(darkStone,[[2.65+Math.cos(a)*.96,7.45+Math.sin(a)*.96,.12],[2.65+Math.cos(a)*1.4,7.45+Math.sin(a)*1.4,.65]],.009);}
+  for(const x of [1.35,2.55,3.75])block(darkStone,x,2.5,.418,.009,4.4,.008);
+  for(const x of [2.2,2.65,3.1])block(black,x,7.45,-.13,.025,1.15,.025);
   // South return: deep horizontal opening, circular glazing and balcony rail.
   block(stone,-.15,8.95,-5.1,.8,1.2,10);block(stone,-.15,1.4,-5.1,.8,2.8,10);
   for(const z of [-1.1,-5.8,-9.8])block(stone,-.15,5.1,z,.8,6.5,1.0);
@@ -109,6 +110,11 @@ export function createTaichingCorner(k){
     mesh(new THREE.ExtrudeGeometry(arch,{depth:.22,bevelEnabled:true,bevelSize:.028,bevelThickness:.028,bevelSegments:2}),gold,0,0,.31);
     tube(gold,arc,.055);tube(gold,arc.map(([a,b,c])=>[a,b+.29,c+.18]),.065);
     for(let j=0;j<12;j++){const a=x-1.43+j*.26,b=5.04+.52*Math.sin((j+1)/13*Math.PI);tube(gold,[[a-.08,b-.06,.56],[a,b+.05,.6],[a+.09,b-.04,.57]],.018);}
+    for(let j=0;j<9;j++){
+      const a=x-1.26+j*.315,b=5.025+.52*Math.sin((j+1)/10*Math.PI);
+      const scroll=Array.from({length:19},(_,n)=>{const t=n/18*Math.PI*1.65,r=.07*(1-n/25);return [a+Math.cos(t)*r,b+Math.sin(t)*r,.585];});tube(gold,scroll,.013);
+      const leaf=mesh(new THREE.SphereGeometry(1,8,6),gold,a+.085,b,.586);leaf.scale.set(.032,.085,.016);leaf.rotation.z=-.6;
+    }
     for(const z of [0,2.03])block(black,x,9.7,z,5.65,.14,.13);
     for(let j=0;j<4;j++)block(canopyGlass,x-2.06+j*1.37,9.78,1.0,1.2,.055,1.86);
     for(const dx of [-2.8,-1.4,0,1.4,2.8])block(black,x+dx,9.84,1.0,.11,.12,2.1);
@@ -117,6 +123,7 @@ export function createTaichingCorner(k){
     for(const dx of [-2.25,2.25])tube(black,[[x+dx,8.85,0],[x+dx,9.62,1.83]],.042);
     sign(i===0?brand:i===1?baishi:green,x,6.8,.15,5.1,1.19);
     sign(i===0?upperBrand:i===1?learning:poster,x,8.39,.14,5.1,1.74);
+    if(i===0){for(const dx of [-2.58,0,2.58])block(black,x+dx,8.39,.174,.045,1.79,.068);}
     for(const dx of [-2.65,2.65])for(let j=0;j<9;j++)block(gold,x+dx,6.3+j*.12,.2,.23,.025,.08);
     for(const y of [5.98,7.43,9.27])block(black,x,y,.18,5.35,.09,.12);
     if(i===0){sign(doorAd,x-.72,2.0,-.22,1.38,2.3);sign(listings,x-3.42,2.4,.34,1.17,3.4);}
@@ -138,11 +145,25 @@ export function createTaichingCorner(k){
   // Tall Art Deco wall lights: pale glass, brass grid, tapered lower brackets.
   for(const x of [.15,4.9,11,17,23,29,35]){
     block(gold,x,4.26,.78,.42,2.43,.32);block(lamp,x,4.3,.97,.31,2.25,.07);
+    for(const side of [-1,1]){
+      block(lamp,x+side*.218,4.3,.825,.025,2.25,.23);
+      for(const z of [.71,.95])block(gold,x+side*.238,4.3,z,.03,2.34,.035);
+      for(let j=0;j<6;j++)block(gold,x+side*.238,3.27+j*.4,.83,.03,.027,.27);
+    }
     for(const dx of [-.17,.17])block(gold,x+dx,4.3,1.02,.025,2.25,.045);
     for(let j=0;j<6;j++)block(gold,x,3.27+j*.4,1.03,.37,.028,.07);
     block(gold,x,5.59,.83,.5,.14,.41);block(gold,x,5.74,.83,.22,.17,.3);
     const bracket=new THREE.Shape([new THREE.Vector2(-.19,0),new THREE.Vector2(.19,0),new THREE.Vector2(.08,-.71),new THREE.Vector2(-.045,-.9)]);
     mesh(new THREE.ExtrudeGeometry(bracket,{depth:.21,bevelEnabled:false}),gold,x,3.05,.7);
+    for(const side of [-1,1])tube(gold,[[x+side*.19,3.08,1.0],[x+side*.14,2.64,.94],[x+side*.055,2.17,.76]],.026);
+    block(black,x,2.49,.925,.065,.38,.012);block(gold,x,3.08,.89,.49,.07,.38);
+  }
+  for(const [x,y]of [[4.38,3.82],[10.46,4.45]]){
+    block(bollardMaterial,x,y,.79,.13,.18,.12);
+    tube(bollardMaterial,[[x,y,.82],[x,y-.1,1.04],[x+.14,y-.08,1.15]],.024);
+    const camera=block(bollardMaterial,x+.16,y-.04,1.2,.19,.115,.3);camera.rotation.x=.18;camera.rotation.y=-.34;
+    const lens=mesh(new THREE.CircleGeometry(.043,20),black,x+.11,y-.065,1.36);lens.rotation.y=-.34;
+    block(bollardMaterial,x+.16,y+.027,1.22,.215,.025,.35);
   }
   // Horizontal stone joints, sidewalk tiles, trimmed planting and squat bollards.
   for(let y=.65;y<9.4;y+=.92){
@@ -197,5 +218,5 @@ export function createTaichingCorner(k){
   root.updateMatrixWorld(true);const batches=new Map();
   root.traverse(obj=>{if(!obj.isMesh)return;const key=obj.material;if(!batches.has(key))batches.set(key,[]);const geo=obj.geometry.index?obj.geometry.toNonIndexed():obj.geometry.clone();batches.get(key).push(geo.applyMatrix4(obj.matrixWorld));});
   for(const [mat,pieces]of batches){const geo=mergeGeometries(pieces);pieces.forEach(g=>g.dispose());if(!geo)throw new Error('Corner facade merge failed');const obj=new THREE.Mesh(geo,mat);obj.name='Taiching corner facade';obj.castShadow=!mat.transparent;obj.receiveShadow=true;groups.buildings.add(obj);}
-  return {viewPosition:[X(608),2.6,Z(473)],viewTarget:[X(554),4.9,Z(456)]};
+  return {viewPosition:[X(604),3.1,Z(493)],viewTarget:[X(554),5.8,Z(472)]};
 }
