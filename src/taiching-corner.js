@@ -151,7 +151,7 @@ export function createTaichingCorner(k){
     else if(y<6.0||y>8.9)block(darkStone,2.65,y,.615,3.7,.009,.012);
   }
   const treeXs=[15.2,22.7,30.3,35.8];
-  for(let x=0;x<36;x+=.65)for(let z=.8;z<3.8;z+=.65){if(treeXs.some(tx=>Math.abs(x-tx)<1.4&&z>2.05&&z<3.3))continue;block(pavement,x,.17,z,.63,.04,.63);}
+  for(let x=0;x<36;x+=.65)for(let z=.8;z<3.8;z+=.65){if((x<2.15&&z>1.05&&z<3.4)||treeXs.some(tx=>Math.abs(x-tx)<1.4&&z>2.05&&z<3.3))continue;block(pavement,x,.17,z,.63,.04,.63);}
   for(const x of [8,14,20,26,32]){
     mesh(new THREE.CylinderGeometry(.58,.58,.014,48),pavingInset,x,.204,1.69);
     const rim=mesh(new THREE.TorusGeometry(.62,.012,4,48),darkStone,x,.213,1.69);rim.rotation.x=Math.PI/2;
@@ -160,7 +160,7 @@ export function createTaichingCorner(k){
     for(let j=0;j<8;j++)block(pavement,x-1.77+j*.065,.218,2.3,.016,.01,.38);
     block(grate,x-1.35,.04,4.04,.86,.035,.3);for(let j=0;j<9;j++)block(bollardCap,x-1.72+j*.092,.064,4.04,.03,.02,.26);
   }
-  for(const x of [1.4,...treeXs]){
+  for(const x of [3.4,...treeXs]){
     block(soil,x,.19,2.65,2.72,.08,1.18);
     for(const dx of [-1.37,1.37])block(pavement,x+dx,.22,2.65,.08,.12,1.25);
     for(const dz of [-.63,.63])block(pavement,x,.22,2.65+dz,2.8,.12,.08);
@@ -170,8 +170,9 @@ export function createTaichingCorner(k){
     for(let j=0;j<10;j++){const bloom=mesh(new THREE.IcosahedronGeometry(.035,0),flowerMaterial,x-1.15+j*.25,.73,3.12);bloom.castShadow=false;}
   }
   for(const x of [0,1.2,2.4,3.6,4.8]){
-    mesh(new THREE.CylinderGeometry(.14,.19,.4,12),bollardMaterial,x,.4,3);
-    mesh(new THREE.CylinderGeometry(.2,.14,.08,12),bollardCap,x,.64,3);
+    const z=x<2?.93:3;
+    mesh(new THREE.CylinderGeometry(.14,.19,.4,12),bollardMaterial,x,.4,z);
+    mesh(new THREE.CylinderGeometry(.2,.14,.08,12),bollardCap,x,.64,z);
   }
   // Patinated folded vertical sculpture on its dark rectangular plinth.
   block(darkStone,6.4,.26,2.65,1.42,.3,1.08);

@@ -3,11 +3,13 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { X,Z,SCALE } from './city-geometry.js';
 import { referenceDetails,SCHOOL_FOREGROUND_TREES } from './reference-details.js';
 import { createScooter,createHelmet } from './scooter.js';
+import { junctionSurfaces,cornerPavement } from './junction-surfaces.js';
 
 export const JUNCTION={u:602,v:547};
 
 export function intersectionDetails(k){
   const {box,ellipse,polygon,path,segment,materials,groups,shrub}=k;
+  junctionSurfaces(k);
   materials.curbRed=new THREE.MeshStandardMaterial({color:0xb96064,roughness:.95});
   materials.signalGreen=new THREE.MeshStandardMaterial({color:0x244c46,roughness:.64});
   materials.hedge=new THREE.MeshStandardMaterial({color:0x426044,roughness:1});
@@ -26,28 +28,32 @@ export function intersectionDetails(k){
     const mesh=panel(mat,u,v,.35,w*SCALE,d*SCALE,0,'roads');mesh.rotation.set(-Math.PI/2,0,rotation);
   }
   const roadContour=[[568,350],[636,350],[636,493],[646,513],[770,513],[770,581],[648,581],[636,595],[636,732],[568,732],[568,595],[554,581],[474,581],[474,513],[554,513],[568,499]];
-  polygon('roads','asphalt',roadContour,.05,.27);
+  polygon('roads','junctionAsphalt',roadContour,.05,.27);
   for(const sx of [-1,1])for(const sz of [-1,1]){
     const p=(u,v)=>[602+sx*u,547+sz*v];
     const arc=Array.from({length:17},(_,i)=>{const a=Math.PI+i/16*Math.PI/2;return p(48+14*Math.cos(a),48+14*Math.sin(a));});
-    polygon('ground','walk',[...arc,p(80,34),p(80,89),p(34,89)],.17,.31);
-    path('ground','stone',arc.map(([u,v])=>[u,v,.44]),.065);
+    cornerPavement(k,p,arc);
+    path('ground','stone',arc.slice(4,-4).map(([u,v])=>[u,v,.44]),.065);
     const redArc=Array.from({length:25},(_,i)=>{const a=Math.PI+i/24*Math.PI/2;return [...p(48+15*Math.cos(a),48+15*Math.sin(a)),.34];});
     const redPoints=[p(33,88),...redArc.map(([u,v])=>[u,v]),p(80,33)];
     for(let i=1;i<redPoints.length;i++)segment('roads','curbRed',redPoints[i-1],redPoints[i],.52,.006,.343);
     for(let u=36;u<78;u+=3.2)for(let v=36;v<86;v+=3.2){
       if(u<48&&v<48&&Math.hypot(u-48,v-48)>12.8)continue;
+      if((u<44.6&&v>41.4&&v<52.6)||(v<44.6&&u>41.4&&u<52.6))continue;
       box('ground','ledge',...p(u,v),3.08,3.08,.018,.485);
     }
     for(const [u,v]of [[38,65],[43,52],[55,40],[69,38]])ellipse('details','stone',...p(u,v),1.05,1.05,.7,.49);
     box('details','dark',...p(31.8,61),1.6,5,.025,.325);
     for(let i=0;i<6;i++)box('details','steel',...p(31.8,59+i*.7),1.4,.22,.018,.35);
+    box('details','dark',...p(58,72),4.7,3.1,.019,.505);
+    for(let i=0;i<9;i++)box('details','steel',...p(56+i*.49,72),.16,2.8,.014,.525);
+    for(let i=0;i<9;i++){const a=Math.PI+(i+.5)/9*Math.PI/2;segment('ground','dark',p(48+13.8*Math.cos(a),48+13.8*Math.sin(a)),p(48+14.3*Math.cos(a),48+14.3*Math.sin(a)),.09,.009,.506);}
   }
   // Four zebra crossings, approach stop bars and the diagonal all-way crossing.
   for(const side of [-1,1]){
     for(let i=-4;i<=4;i++){
-      box('roads','line',602+i*6.5,547+side*46,3.5,9,.018,.335);
-      box('roads','line',602+side*46,547+i*6.5,9,3.5,.018,.335);
+      box('roads','crosswalkPaint',602+i*6.5,547+side*46,3.5,9,.007,.335);
+      box('roads','crosswalkPaint',602+side*46,547+i*6.5,9,3.5,.007,.335);
     }
     segment('roads','line',[side<0?569:604,547+side*55],[side<0?600:635,547+side*55],1.2,.018,.335);
     for(const offset of [-1,1])segment('roads','yellow',[602+offset*1.0,side<0?350:609],[602+offset*1.0,side<0?485:732],.8,.018,.335);
@@ -74,7 +80,7 @@ export function intersectionDetails(k){
   const person=pedestrianFace(false),countdown=pedestrianFace(true);
   function roadSign(u,v,y,cn,en,angle=0){
     const mat=canvasMaterial((ctx,w,h)=>{ctx.fillStyle='#288779';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#e1e9df';ctx.lineWidth=9;ctx.strokeRect(6,6,w-12,h-12);ctx.fillStyle='#fff';ctx.textAlign='center';ctx.font='bold 88px "Microsoft JhengHei",sans-serif';ctx.fillText(`← ${cn} →`,w/2,110);ctx.font='58px sans-serif';ctx.fillText(en,w/2,194);},512,230);
-    box('details','steel',u-Math.sin(angle)*.13,v-Math.cos(angle)*.13,6.2,.3,.68,y-.34,angle);
+    box('details','steel',u-Math.sin(angle)*.3,v-Math.cos(angle)*.3,6.2,.3,.68,y-.34,angle);
     panel(mat,u,v,y,1.4,.63,angle);
   }
   const stripedMetal=new THREE.MeshStandardMaterial({map:stripe.map,roughness:.85});
@@ -97,6 +103,12 @@ export function intersectionDetails(k){
     panel(u<602&&v<547?countdown:person,u+Math.sin(angle)*1.5,v+Math.cos(angle)*1.5,2.77,.43,.67,angle);
     box('details','signalGreen',u,v+Math.cos(angle)*.8,3.1,3.8,.07,3.28,angle);
     box('details','signalGreen',u+Math.sin(angle)*.8,v+Math.cos(angle)*.8,2.8,3.1,.06,2.72,angle);
+    for(const side of [-1,1]){
+      const du=Math.cos(angle)*side*.86+Math.sin(angle)*1.29,dv=-Math.sin(angle)*side*.86+Math.cos(angle)*1.29;
+      for(const y of [2.33,3.16])box('details','steel',u+du,v+dv,.16,.13,.035,y,angle);
+    }
+    const nx=Math.sin(angle),nz=Math.cos(angle);
+    path('details','dark',[[u-nx*.7,v-nz*.7,3.02],[u-nx*1.2,v-nz*1.2,2.89],[u-nx*.7,v-nz*.7,2.32]],.014);
     const signAngle=cn==='富農路'?0:angle;
     roadSign(u+Math.sin(signAngle)*.7,v+Math.cos(signAngle)*.7,4.0,cn,en,signAngle);
     const direction=u<602?1:-1;
